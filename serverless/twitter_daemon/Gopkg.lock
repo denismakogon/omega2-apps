@@ -37,21 +37,9 @@
   packages = ["oauth"]
   revision = "166ce8d672783fbb5a72247c3cf459267717e1ec"
 
-[[projects]]
-  name = "github.com/gorilla/context"
-  packages = ["."]
-  revision = "1ea25387ff6f684839d82767c1733ff4d4d15d0a"
-  version = "v1.1"
-
-[[projects]]
-  name = "github.com/gorilla/mux"
-  packages = ["."]
-  revision = "bcd8bc72b08df0f70df986b97f95590779502d31"
-  version = "v1.4.0"
-
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "c96e37c390efa7a7a217378f525e1f75a61f638f47d3262139fbda36847b9383"
+  inputs-digest = "9c6a72635c0c74ed5400d8bf0449647fbf6a84c73e3e44479710d1992b8661ed"
   solver-name = "gps-cdcl"
   solver-version = 1
