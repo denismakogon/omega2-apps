@@ -14,6 +14,12 @@
   revision = "c5a927568de7aad8a58127d80bcd36ca4e71e454"
 
 [[projects]]
+  name = "github.com/Sirupsen/logrus"
+  packages = ["."]
+  revision = "f006c2ac4710855cf0f916dd6b77acf6b048dc6e"
+  version = "v1.0.3"
+
+[[projects]]
   branch = "master"
   name = "github.com/azr/backoff"
   packages = ["."]
@@ -37,9 +43,21 @@
   packages = ["oauth"]
   revision = "166ce8d672783fbb5a72247c3cf459267717e1ec"
 
+[[projects]]
+  branch = "master"
+  name = "golang.org/x/crypto"
+  packages = ["ssh/terminal"]
+  revision = "eb71ad9bd329b5ac0fd0148dd99bd62e8be8e035"
+
+[[projects]]
+  branch = "master"
+  name = "golang.org/x/sys"
+  packages = ["unix","windows"]
+  revision = "22e23b74325bf60e4cc1ce7bdc157eda0d8b5c13"
+
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "9c6a72635c0c74ed5400d8bf0449647fbf6a84c73e3e44479710d1992b8661ed"
+  inputs-digest = "94408cea34ad161854ce54c08694b3a50b27405a23c75d0dc332d91e06af3b5a"
   solver-name = "gps-cdcl"
   solver-version = 1

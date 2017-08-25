@@ -7,6 +7,7 @@ import (
 	"net/url"
 	"strconv"
 	"os"
+	"github.com/Sirupsen/logrus"
 )
 
 type OnionOmega2 struct {
