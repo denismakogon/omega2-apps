@@ -1,4 +1,4 @@
-package main
+package cross_compiling
 
 import (
     "net/http"

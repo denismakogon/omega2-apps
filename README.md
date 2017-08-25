@@ -21,7 +21,7 @@ $ export GOPATH=~/go
 $ go get -u github.com/gorilla/mux
 ```    
 
-In order to build our [simple http server](mux_server.go) you need to use following command:
+In order to build our [simple http server](cross-compiling/mux_server.go) you need to use following command:
 ```bash
 $ GOOS=linux GOARCH=mipsle go build -compiler gc mux_server.go
 ```
@@ -35,9 +35,9 @@ $ scp mux_server root@192.168.3.1:/root
 
 Take a look at [Omega 2 Getting started guide](https://wiki.onion.io/get-started) for more information how to connect to your device.
 
-Here's an example for [Hello World app](hello_world.go):
+Here's an example for [Hello World app](cross-compiling/hello_world.go):
 
-```bash
+```
 BusyBox v1.25.1 () built-in shell (ash)
 
    ____       _             ____
@@ -62,7 +62,7 @@ Hello linux/mipsle
 Negative effect
 ---------------
 
-[mux_server](mux_server.go) file with 25 LOC has size of 539 bytes, but its binary file weights something around 5.5Mb.
+[mux_server](cross-compiling/mux_server.go) file with 25 LOC has size of 539 bytes, but its binary file weights something around 5.5Mb.
 Onion Omega 2 chip comes with 14Mb storage available, so there's no so much space for a good party, unfortunately.
 
 Positive effect
