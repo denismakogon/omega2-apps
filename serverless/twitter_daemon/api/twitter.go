@@ -7,8 +7,8 @@ import (
 	"net/http"
 	"os"
 	"strconv"
-	"time"
 	"sync"
+	"time"
 )
 
 type TwitterSecret struct {

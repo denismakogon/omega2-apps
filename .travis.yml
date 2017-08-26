@@ -1,0 +1,8 @@
+language: go
+go:
+ - 1.8.3
+
+script:
+ - make build-twitter-daemon
+ - make build-twitter-daemon-mipsle
+ - ./go-fmt.sh

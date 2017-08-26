@@ -7,8 +7,8 @@ import (
 	"net"
 	"net/http"
 	"net/url"
-	"time"
 	"sync"
+	"time"
 )
 
 func main() {
