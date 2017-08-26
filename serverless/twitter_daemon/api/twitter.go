@@ -8,6 +8,7 @@ import (
 	"os"
 	"strconv"
 	"time"
+	"sync"
 )
 
 type TwitterSecret struct {
@@ -67,7 +68,9 @@ func (omega *OnionOmega2) GetRecentMentions() (tweets []anaconda.Tweet, err erro
 	return tweets, nil
 }
 
-func (omega *OnionOmega2) ProcessTweets(tweets *[]anaconda.Tweet, httpClient *http.Client, fnAPIURL, fnToken string) error {
+func (omega *OnionOmega2) ProcessTweets(wg *sync.WaitGroup, tweet anaconda.Tweet, httpClient *http.Client, fnAPIURL, fnToken string) error {
+	defer wg.Done()
+
 	detect, err := http.NewRequest(
 		http.MethodPost, fmt.Sprintf("%s/r/whereisit/detect-where", fnAPIURL),
 		nil)
@@ -80,31 +83,30 @@ func (omega *OnionOmega2) ProcessTweets(tweets *[]anaconda.Tweet, httpClient *ht
 		return err
 	}
 
-	for _, tweet := range *tweets {
-		omega.PrintTweetInfo(tweet)
-		if len(tweet.Entities.Media) != 0 {
-			media := tweet.Entities.Media[0]
-			user := fmt.Sprintf("@%v", tweet.User.ScreenName)
-			if media.Type != "photo" {
-				payload := &RequestPayload{
-					User:    user,
-					TweetID: tweet.IdStr,
-				}
-				err := doRequest(payload, fail, httpClient, fnToken)
-				if err != nil {
-					return err
-				}
-			} else {
-				payload := &RequestPayload{
-					MediaURL: media.Expanded_url,
-					User:     user,
-					TweetID:  tweet.IdStr,
-					GCloud:   *omega.GCloudAuth,
-				}
-				err := doRequest(payload, detect, httpClient, fnToken)
-				if err != nil {
-					return err
-				}
+	omega.PrintTweetInfo(tweet)
+
+	if len(tweet.Entities.Media) != 0 {
+		media := tweet.Entities.Media[0]
+		user := fmt.Sprintf("@%v", tweet.User.ScreenName)
+		if media.Type != "photo" {
+			payload := &RequestPayload{
+				User:    user,
+				TweetID: tweet.IdStr,
+			}
+			err := doRequest(payload, fail, httpClient, fnToken)
+			if err != nil {
+				return err
+			}
+		} else {
+			payload := &RequestPayload{
+				MediaURL: media.Expanded_url,
+				User:     user,
+				TweetID:  tweet.IdStr,
+				GCloud:   *omega.GCloudAuth,
+			}
+			err := doRequest(payload, detect, httpClient, fnToken)
+			if err != nil {
+				return err
 			}
 		}
 	}

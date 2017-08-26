@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"net/url"
 	"time"
+	"sync"
 )
 
 func main() {
@@ -52,6 +53,8 @@ func main() {
 		GCloudAuth:   gc,
 	}
 
+	wg := new(sync.WaitGroup)
+
 	for {
 		// make this async as hell with WaitGroup
 		ok, err := omega.TwitterAPI.VerifyCredentials()
@@ -64,7 +67,13 @@ func main() {
 			fmt.Println(err.Error())
 			panic(err.Error())
 		}
-		omega.ProcessTweets(&tweets, httpClient, fnAPIURL, fnToken)
+		if len(tweets) != 0 {
+			wg.Add(len(tweets))
+			for _, tweet := range tweets {
+				go omega.ProcessTweets(wg, tweet, httpClient, fnAPIURL, fnToken)
+			}
+			wg.Wait()
+		}
 		time.Sleep(time.Second * 6)
 	}
 }
