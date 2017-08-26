@@ -14,10 +14,22 @@
   revision = "c5a927568de7aad8a58127d80bcd36ca4e71e454"
 
 [[projects]]
-  name = "github.com/Sirupsen/logrus"
+  name = "github.com/PuerkitoBio/purell"
   packages = ["."]
-  revision = "f006c2ac4710855cf0f916dd6b77acf6b048dc6e"
-  version = "v1.0.3"
+  revision = "0bcb03f4b4d0a9428594752bd2a3b9aa0a9d4bd4"
+  version = "v1.1.0"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/PuerkitoBio/urlesc"
+  packages = ["."]
+  revision = "de5bf2ad457846296e2031421a34e2568e304e35"
+
+[[projects]]
+  name = "github.com/asaskevich/govalidator"
+  packages = ["."]
+  revision = "4918b99a7cb949bb295f3c7bbaf24b577d806e35"
+  version = "v6"
 
 [[projects]]
   branch = "master"
@@ -38,6 +50,12 @@
   revision = "2e71ec9dd5adce3b168cd0dbde03b5cc04951c30"
 
 [[projects]]
+  name = "github.com/funcy/functions_go"
+  packages = ["client","client/apps","client/call","client/operations","client/routes","client/version","models"]
+  revision = "e046aa4ca1f1028a04fc51395297ff07515cb0b6"
+  version = "0.1.37"
+
+[[projects]]
   branch = "master"
   name = "github.com/garyburd/go-oauth"
   packages = ["oauth"]
@@ -45,19 +63,103 @@
 
 [[projects]]
   branch = "master"
-  name = "golang.org/x/crypto"
-  packages = ["ssh/terminal"]
-  revision = "eb71ad9bd329b5ac0fd0148dd99bd62e8be8e035"
+  name = "github.com/go-openapi/analysis"
+  packages = ["."]
+  revision = "8ed83f2ea9f00f945516462951a288eaa68bf0d6"
 
 [[projects]]
   branch = "master"
-  name = "golang.org/x/sys"
-  packages = ["unix","windows"]
-  revision = "22e23b74325bf60e4cc1ce7bdc157eda0d8b5c13"
+  name = "github.com/go-openapi/errors"
+  packages = ["."]
+  revision = "03cfca65330da08a5a440053faf994a3c682b5bf"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/go-openapi/jsonpointer"
+  packages = ["."]
+  revision = "779f45308c19820f1a69e9a4cd965f496e0da10f"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/go-openapi/jsonreference"
+  packages = ["."]
+  revision = "36d33bfe519efae5632669801b180bf1a245da3b"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/go-openapi/loads"
+  packages = ["."]
+  revision = "a80dea3052f00e5f032e860dd7355cd0cc67e24d"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/go-openapi/runtime"
+  packages = [".","client"]
+  revision = "d6605b7c17ac3b1033ca794886e6142a4141f5b0"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/go-openapi/spec"
+  packages = ["."]
+  revision = "3faa0055dbbf2110abc1f3b4e3adbb22721e96e7"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/go-openapi/strfmt"
+  packages = ["."]
+  revision = "610b6cacdcde6852f4de68998bd20ce1dac85b22"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/go-openapi/swag"
+  packages = ["."]
+  revision = "f3f9494671f93fcff853e3c6e9e948b3eb71e590"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/go-openapi/validate"
+  packages = ["."]
+  revision = "8a82927c942c94794a5cd8b8b50ce2f48a955c0c"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/mailru/easyjson"
+  packages = ["buffer","jlexer","jwriter"]
+  revision = "3b3bbef4e2d9a6f24d7ee73a894afbc064f0e057"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/mitchellh/mapstructure"
+  packages = ["."]
+  revision = "d0303fe809921458f417bcf828397a65db30a7e4"
+
+[[projects]]
+  branch = "master"
+  name = "golang.org/x/net"
+  packages = ["context","context/ctxhttp","idna"]
+  revision = "57efc9c3d9f91fb3277f8da1cff370539c4d3dc5"
+
+[[projects]]
+  branch = "master"
+  name = "golang.org/x/text"
+  packages = ["internal/gen","internal/triegen","internal/ucd","secure/bidirule","transform","unicode/bidi","unicode/cldr","unicode/norm","unicode/rangetable","width"]
+  revision = "ac87088df8ef557f1e32cd00ed0b6fbc3f7ddafb"
+
+[[projects]]
+  branch = "v2"
+  name = "gopkg.in/mgo.v2"
+  packages = ["bson","internal/json"]
+  revision = "3f83fa5005286a7fe593b055f0d7771a7dce4655"
+
+[[projects]]
+  branch = "v2"
+  name = "gopkg.in/yaml.v2"
+  packages = ["."]
+  revision = "eb3733d160e74a9c7e442f435eb3bea458e1d19f"
 
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "94408cea34ad161854ce54c08694b3a50b27405a23c75d0dc332d91e06af3b5a"
+  inputs-digest = "ef51d1d803c186625052c097d1565db063d09b1da1a298b82cb7ddf1051588c2"
   solver-name = "gps-cdcl"
   solver-version = 1
