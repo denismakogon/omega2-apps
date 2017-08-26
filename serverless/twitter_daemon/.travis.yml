@@ -1,0 +1,9 @@
+language: go
+go:
+ - 1.8.3
+
+script:
+ - make build
+ - make build-mipsle
+ - go vet -v $(go list ./... | grep -v /vendor/)
+
