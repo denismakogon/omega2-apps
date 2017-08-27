@@ -34,6 +34,7 @@ func recreateRoute(ctx context.Context, fnclient *client.Functions, appName, ima
 				Path:    routePath,
 				Type:    routeType,
 				Timeout: &timeout,
+				Memory:  uint64(256),
 			},
 		},
 		Context: ctx,
