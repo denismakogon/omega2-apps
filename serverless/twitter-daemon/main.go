@@ -72,7 +72,8 @@ func main() {
 			wg.Add(len(tweets))
 			for _, tweet := range tweets {
 				go func() {
-					err := omega.ProcessTweets(wg, tweet, httpClient, fnAPIURL, fnToken)
+					defer wg.Done()
+					err := omega.ProcessTweets(tweet, httpClient, fnAPIURL, fnToken)
 					if err != nil {
 						fmt.Fprint(os.Stderr, err.Error())
 					}

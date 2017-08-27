@@ -7,7 +7,6 @@ import (
 	"net/http"
 	"os"
 	"strconv"
-	"sync"
 	"time"
 )
 
@@ -68,9 +67,7 @@ func (omega *OnionOmega2) GetRecentMentions() (tweets []anaconda.Tweet, err erro
 	return tweets, nil
 }
 
-func (omega *OnionOmega2) ProcessTweets(wg *sync.WaitGroup, tweet anaconda.Tweet, httpClient *http.Client, fnAPIURL, fnToken string) error {
-	defer wg.Done()
-
+func (omega *OnionOmega2) ProcessTweets(tweet anaconda.Tweet, httpClient *http.Client, fnAPIURL, fnToken string) error {
 	detect, err := http.NewRequest(
 		http.MethodPost, fmt.Sprintf("%s/r/whereisit/detect-where", fnAPIURL),
 		nil)
