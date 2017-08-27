@@ -21,12 +21,12 @@ build-twitter-daemon-mipsle:
 
 ci-build-twitter-daemon:
 	cd serverless/twitter-daemon; \
-	dep ensure; \
+	${GOPATH}/bin/dep ensure; \
 	go build -race; \
 	rm -fr twitter_daemon
 
 ci-build-twitter-daemon-mipsle:
 	cd serverless/twitter-daemon; \
-	dep ensure; \
+	${GOPATH}/bin/dep ensure; \
 	GOOS=linux GOARCH=mipsle go build -ldflags "-s -w" -compiler gc; \
 	rm -fr twitter_daemon
