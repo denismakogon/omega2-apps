@@ -4,6 +4,6 @@ go:
 
 script:
  - echo $GOPATH
- - make build-twitter-daemon
- - make build-twitter-daemon-mipsle
+ - make ci-build-twitter-daemon
+ - make ci-build-twitter-daemon-mipsle
  - ./go-fmt.sh
