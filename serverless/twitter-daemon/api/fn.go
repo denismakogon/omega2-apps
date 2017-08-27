@@ -2,7 +2,7 @@ package api
 
 import (
 	"context"
-	"fmt"
+	"errors"
 	"github.com/funcy/functions_go/client"
 	"github.com/funcy/functions_go/client/apps"
 	"github.com/funcy/functions_go/client/routes"
@@ -38,43 +38,58 @@ func recreateRoute(ctx context.Context, fnclient *client.Functions, appName, ima
 		},
 		Context: ctx,
 	}
-	// Renew or create from scratch route no matter exist it or not
-	_, err := fnclient.Routes.DeleteAppsAppRoutesRoute(&routes.DeleteAppsAppRoutesRouteParams{
-		App:     appName,
-		Route:   routePath,
-		Context: ctx,
-	})
+	_, err := fnclient.Routes.PostAppsAppRoutes(cfg)
 	if err != nil {
-		// we should not fail here in case route does not exist
-		fmt.Fprintf(os.Stdout, "Unable to delete route, got error %v", err.Error())
-	}
-	_, err = fnclient.Routes.PostAppsAppRoutes(cfg)
-	if err != nil {
-		return err
+		return errors.New(err.Error())
 	}
 	return nil
 }
 
 func setupAppAndRoutes(fnclient *client.Functions, gcloud *GCloudSecret, twitterSecret *TwitterSecret) error {
 	app := "where-is-it"
-	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 300*time.Second)
 	defer cancel()
 
 	config := map[string]string{}
-	config, err := gcloud.Append(config)
+	config, err := Append(gcloud, config)
 	if err != nil {
 		return err
 	}
-	config, err = twitterSecret.Append(config)
+	config, err = Append(twitterSecret, config)
 	if err != nil {
 		return err
 	}
 
-	// Renew app or create from scratch
-	_, err = fnclient.Apps.DeleteAppsApp(&apps.DeleteAppsAppParams{
+	_, err = fnclient.Apps.GetAppsApp(&apps.GetAppsAppParams{
 		App:     app,
 		Context: ctx,
 	})
+	// app exists
+	if err == nil {
+		appRoutes, err := fnclient.Routes.GetAppsAppRoutes(&routes.GetAppsAppRoutesParams{
+			App:     app,
+			Context: ctx,
+		})
+		if err != nil {
+			return errors.New(err.Error())
+		}
+		// dropping all routes
+		if len(appRoutes.Payload.Routes) != 0 {
+			for _, route := range appRoutes.Payload.Routes {
+				fnclient.Routes.DeleteAppsAppRoutesRoute(&routes.DeleteAppsAppRoutesRouteParams{
+					App:     app,
+					Route:   route.Path,
+					Context: ctx,
+				})
+			}
+		}
+	}
+	// deleting app
+	fnclient.Apps.DeleteAppsApp(&apps.DeleteAppsAppParams{
+		App:     app,
+		Context: ctx,
+	})
+	// creating from scratch
 	_, err = fnclient.Apps.PostApps(&apps.PostAppsParams{
 		Body: &models.AppWrapper{
 			App: &models.App{
@@ -85,23 +100,23 @@ func setupAppAndRoutes(fnclient *client.Functions, gcloud *GCloudSecret, twitter
 		Context: ctx,
 	})
 	if err != nil {
-		return err
+		return errors.New(err.Error())
 	}
 
-	err = recreateRoute(ctx, fnclient, app, "denismakogon/tweet-fail:0.0.1",
+	err = recreateRoute(ctx, fnclient, app, "denismakogon/tweet-fail:0.0.2",
 		"/tweet-fail", "async", 60)
 	if err != nil {
-		return err
+		return errors.New(err.Error())
 	}
-	err = recreateRoute(ctx, fnclient, app, "denismakogon/detect-where:0.0.1",
+	err = recreateRoute(ctx, fnclient, app, "denismakogon/detect-task:0.0.5",
 		"/detect-where", "async", 60)
 	if err != nil {
-		return err
+		return errors.New(err.Error())
 	}
-	err = recreateRoute(ctx, fnclient, app, "denismakogon/tweet-success:0.0.1",
+	err = recreateRoute(ctx, fnclient, app, "denismakogon/tweet-success:0.0.2",
 		"/tweet-success", "async", 60)
 	if err != nil {
-		return err
+		return errors.New(err.Error())
 	}
 	return nil
 }
@@ -109,7 +124,7 @@ func setupAppAndRoutes(fnclient *client.Functions, gcloud *GCloudSecret, twitter
 func SetupFunctions(gc *GCloudSecret, twitterSecret *TwitterSecret) (string, string, error) {
 	fnAPIURL := os.Getenv("API_URL")
 	if fnAPIURL == "" {
-		fnAPIURL = "http://localhost:8080"
+		fnAPIURL = "localhost:8080"
 	}
 	fnToken := os.Getenv("FN_TOKEN")
 	fnTransport := openapi.New(fnAPIURL, "/v1", []string{"http"})

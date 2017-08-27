@@ -7,11 +7,10 @@ import (
 	"net/http"
 	"os"
 	"strconv"
-	"time"
+	//"time"
 )
 
 type TwitterSecret struct {
-	Mapper
 	ConsumerKey    string `json:"consumer_key"`
 	ConsumerSecret string `json:"consumer_secret"`
 	APIToken       string `json:"api_key"`
@@ -51,7 +50,7 @@ func (twitter *TwitterSecret) FromEnv() (*anaconda.TwitterApi, error) {
 	twitter.APIToken = apiToken
 	twitter.APITokenSecret = apiTokenSecret
 
-	api.SetDelay(5 * time.Second)
+	//api.SetDelay(5 * time.Second)
 	return api, nil
 }
 
@@ -69,13 +68,13 @@ func (omega *OnionOmega2) GetRecentMentions() (tweets []anaconda.Tweet, err erro
 
 func (omega *OnionOmega2) ProcessTweets(tweet anaconda.Tweet, httpClient *http.Client, fnAPIURL, fnToken string) error {
 	detect, err := http.NewRequest(
-		http.MethodPost, fmt.Sprintf("%s/r/whereisit/detect-where", fnAPIURL),
+		http.MethodPost, fmt.Sprintf("%s/r/where-is-it/detect-where", fnAPIURL),
 		nil)
 	if err != nil {
 		return err
 	}
 
-	fail, err := http.NewRequest(http.MethodPost, fmt.Sprintf("%s/r/whereisit/tweet-fail", fnAPIURL), nil)
+	fail, err := http.NewRequest(http.MethodPost, fmt.Sprintf("%s/r/where-is-it/tweet-fail", fnAPIURL), nil)
 	if err != nil {
 		return err
 	}
@@ -97,11 +96,11 @@ func (omega *OnionOmega2) ProcessTweets(tweet anaconda.Tweet, httpClient *http.C
 			}
 		} else {
 			payload := &RequestPayload{
-				MediaURL:     media.Expanded_url,
+				MediaURL:     media.Media_url,
 				User:         user,
 				TweetID:      tweet.IdStr,
-				TweetFail:    fmt.Sprintf("%s/r/whereisit/tweet-fail", fnAPIURL),
-				TweetSuccess: fmt.Sprintf("%s/r/whereisit/tweet-success", fnAPIURL),
+				TweetFail:    fmt.Sprintf("%s/r/where-is-it/tweet-fail", fnAPIURL),
+				TweetSuccess: fmt.Sprintf("%s/r/where-is-it/tweet-success", fnAPIURL),
 			}
 			err := doRequest(payload, detect, httpClient, fnToken)
 			if err != nil {
@@ -114,5 +113,5 @@ func (omega *OnionOmega2) ProcessTweets(tweet anaconda.Tweet, httpClient *http.C
 
 func (omega *OnionOmega2) PrintTweetInfo(tweet anaconda.Tweet) {
 	fmt.Printf(fmt.Sprintf(
-		"Found new tweet: %v from @%v.", tweet.Text, tweet.User.ScreenName))
+		"Found new tweet: %v from @%v.\n", tweet.Text, tweet.User.ScreenName))
 }

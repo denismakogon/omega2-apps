@@ -8,6 +8,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"reflect"
 )
 
 type RequestPayload struct {
@@ -24,30 +25,31 @@ type OnionOmega2 struct {
 	SearchValues url.Values
 }
 
-type Mapper struct {
-}
+func ToMap(in interface{}) (map[string]interface{}, error) {
+	out := make(map[string]interface{})
 
-func (m *Mapper) ToMap() (map[string]string, error) {
-	var inInterface interface{}
-	inrec, err := json.Marshal(m)
-	if err != nil {
-		return nil, err
-	}
-	err = json.Unmarshal(inrec, &inInterface)
-	if err != nil {
-		return nil, err
+	v := reflect.ValueOf(in)
+	if v.Kind() == reflect.Ptr {
+		v = v.Elem()
 	}
 
-	return inInterface.(map[string]string), nil
+	typ := v.Type()
+	for i := 0; i < v.NumField(); i++ {
+		fi := typ.Field(i)
+		if tagValue := fi.Tag.Get("json"); tagValue != "" {
+			out[tagValue] = v.Field(i).String()
+		}
+	}
+	return out, nil
 }
 
-func (m *Mapper) Append(config map[string]string) (map[string]string, error) {
-	mMap, err := m.ToMap()
+func Append(obj interface{}, config map[string]string) (map[string]string, error) {
+	mMap, err := ToMap(obj)
 	if err != nil {
 		return nil, err
 	}
 	for key, value := range mMap {
-		config[key] = value
+		config[key] = value.(string)
 	}
 	return config, nil
 }
@@ -67,7 +69,7 @@ func doRequest(payload *RequestPayload, req *http.Request, httpClient *http.Clie
 	if err != nil {
 		return err
 	}
-	if resp.StatusCode == 200 {
+	if resp.StatusCode == http.StatusAccepted || resp.StatusCode == http.StatusOK {
 		callID := new(CallID)
 		err = json.NewDecoder(resp.Body).Decode(&callID)
 		if err != nil {
@@ -75,12 +77,12 @@ func doRequest(payload *RequestPayload, req *http.Request, httpClient *http.Clie
 		}
 		fmt.Printf("New detect func submitted. Call ID: %v", callID.ID)
 	} else {
-		apiErr := new(ErrBody)
-		err = json.NewDecoder(resp.Body).Decode(&apiErr)
+		apiError := new(ErrBody)
+		err = json.NewDecoder(resp.Body).Decode(&apiError)
 		if err != nil {
 			return err
 		}
-		fmt.Printf("Error during detect func submittion. Call ID: %v", apiErr.Error.Message)
+		fmt.Printf("Error during detect func submittion. Call ID: %v", apiError.Error.Message)
 	}
 	return nil
 }

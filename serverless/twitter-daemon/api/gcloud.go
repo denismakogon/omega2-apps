@@ -8,7 +8,6 @@ import (
 )
 
 type GCloudSecret struct {
-	Mapper
 	Type                    string `json:"type"`
 	ProjectID               string `json:"project_id"`
 	PrivateKeyID            string `json:"private_key_id"`
@@ -17,7 +16,7 @@ type GCloudSecret struct {
 	ClientID                string `json:"client_id"`
 	AuthURI                 string `json:"auth_uri"`
 	TokenURI                string `json:"token_uri"`
-	AuthProviderX509CertURL string `json:"auth_provider_x_509_cert_url"`
+	AuthProviderX509CertURL string `json:"auth_provider_x509_cert_url"`
 	ClientX509CertURL       string `json:"client_x509_cert_url"`
 }
 

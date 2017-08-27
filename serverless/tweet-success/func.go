@@ -22,10 +22,10 @@ func main() {
 		return
 	}
 
-	consumerKey := os.Getenv("TwitterConsumerKey")
-	consumerSecret := os.Getenv("TwitterConsumerSecret")
-	apiToken := os.Getenv("TwitterAccessToken")
-	apiTokenSecret := os.Getenv("TwitterAccessTokenSecret")
+	consumerKey := os.Getenv("CONSUMER_KEY")
+	consumerSecret := os.Getenv("CONSUMER_SECRET")
+	apiToken := os.Getenv("API_KEY")
+	apiTokenSecret := os.Getenv("API_KEY_SECRET")
 	anaconda.SetConsumerKey(consumerKey)
 	anaconda.SetConsumerSecret(consumerSecret)
 

@@ -17,18 +17,19 @@ func main() {
 	twitter := new(api.TwitterSecret)
 	twitterAPI, err := twitter.FromEnv()
 	if err != nil {
-		fmt.Println(err.Error())
 		panic(err.Error())
 	}
 
 	gc := new(api.GCloudSecret)
 	err = gc.FromFile()
 	if err != nil {
-		fmt.Println(err.Error())
 		panic(err.Error())
 	}
 
 	fnAPIURL, fnToken, err := api.SetupFunctions(gc, twitter)
+	if err != nil {
+		panic(err.Error())
+	}
 
 	transport := &http.Transport{
 		Proxy: http.ProxyFromEnvironment,
@@ -73,7 +74,7 @@ func main() {
 			for _, tweet := range tweets {
 				go func() {
 					defer wg.Done()
-					err := omega.ProcessTweets(tweet, httpClient, fnAPIURL, fnToken)
+					err := omega.ProcessTweets(tweet, httpClient, fmt.Sprintf("http://%v", fnAPIURL), fnToken)
 					if err != nil {
 						fmt.Fprint(os.Stderr, err.Error())
 					}

@@ -16,6 +16,6 @@ script:
   - make ci-build-twitter-daemon-mipsle
   - make ci-build-tweet-fail
   - make ci-build-tweet-success
-  - docker build -t denismakogon/detect-task:0.0.1 -f serverless/detect-task/Dockerfile serverless/detect-task
-  - docker build -t denismakogon/tweet-fail:0.0.1 -f serverless/tweet-fail/Dockerfile serverless/tweet-fail
-  - docker build -t denismakogon/tweet-success:0.0.1 -f serverless/tweet-success/Dockerfile serverless/tweet-success
+  - docker build -t denismakogon/detect-task -f serverless/detect-task/Dockerfile serverless/detect-task
+  - docker build -t denismakogon/tweet-fail -f serverless/tweet-fail/Dockerfile serverless/tweet-fail
+  - docker build -t denismakogon/tweet-success -f serverless/tweet-success/Dockerfile serverless/tweet-success
