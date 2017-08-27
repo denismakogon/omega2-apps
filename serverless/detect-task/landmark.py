@@ -30,7 +30,6 @@ if __name__ == "__main__":
             if not all([g_type, g_project_id, g_private_key_id, g_private_key,
                         g_client_email, g_auth_uri, g_token_uri,
                         g_auth_provider_x509_cert_url, g_client_x509_cert_url]):
-                sys.stderr.write("One or more GCloud auth attributes empty.")
                 raise Exception("One or more GCloud auth attributes empty.")
 
             g_private_key = g_private_key.replace("\\n", "\n")
@@ -89,6 +88,5 @@ if __name__ == "__main__":
                         "user": user,
                         "tweet_id": tweet_id,
                     })
-
         except Exception as ex:
             sys.stderr.write(str(ex))
