@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/denismakogon/omega2-apps.svg?branch=master)](https://travis-ci.org/denismakogon/omega2-apps)
+
 Onion Omega 2 projects
 ======================
 
