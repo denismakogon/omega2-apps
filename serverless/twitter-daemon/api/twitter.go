@@ -85,7 +85,6 @@ func (omega *OnionOmega2) ProcessTweets(tweet anaconda.Tweet, httpClient *http.C
 		media := tweet.Entities.Media[0]
 		user := fmt.Sprintf("@%v", tweet.User.ScreenName)
 		if media.Type != "photo" {
-			// TODO(denismakogon): add tweet message to func payload
 			payload := &RequestPayload{
 				User:    user,
 				TweetID: tweet.IdStr,
