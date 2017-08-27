@@ -100,10 +100,10 @@ func (omega *OnionOmega2) ProcessTweets(wg *sync.WaitGroup, tweet anaconda.Tweet
 			}
 		} else {
 			payload := &RequestPayload{
-				MediaURL: media.Expanded_url,
-				User:     user,
-				TweetID:  tweet.IdStr,
-				TweetFail: fmt.Sprintf("%s/r/whereisit/tweet-fail", fnAPIURL),
+				MediaURL:     media.Expanded_url,
+				User:         user,
+				TweetID:      tweet.IdStr,
+				TweetFail:    fmt.Sprintf("%s/r/whereisit/tweet-fail", fnAPIURL),
 				TweetSuccess: fmt.Sprintf("%s/r/whereisit/tweet-success", fnAPIURL),
 			}
 			err := doRequest(payload, detect, httpClient, fnToken)

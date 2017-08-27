@@ -9,8 +9,8 @@ import (
 )
 
 type RequestPayload struct {
-	TweetID string `json:"tweet_id"`
-	User    string `json:"user"`
+	TweetID  string `json:"tweet_id"`
+	User     string `json:"user"`
 	Landmark string `json:"landmark"`
 }
 

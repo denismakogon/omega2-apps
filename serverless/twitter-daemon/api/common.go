@@ -11,10 +11,10 @@ import (
 )
 
 type RequestPayload struct {
-	TweetID  string       `json:"tweet_id"`
-	MediaURL string       `json:"media_url,omitempty"`
-	User     string       `json:"user"`
-	TweetFail string `json:"tweet_fail,omitempty"`
+	TweetID      string `json:"tweet_id"`
+	MediaURL     string `json:"media_url,omitempty"`
+	User         string `json:"user"`
+	TweetFail    string `json:"tweet_fail,omitempty"`
 	TweetSuccess string `json:"tweet_success,omitempty"`
 }
 
