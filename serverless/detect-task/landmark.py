@@ -12,8 +12,6 @@ from google.cloud.vision import types
 if __name__ == "__main__":
     if not os.isatty(sys.stdin.fileno()):
         try:
-            sys.stderr.write("ENV: {}\n".format(
-                json.dumps(dict(os.environ), sort_keys=False, indent=4)))
             g_type = os.environ.get("TYPE")
             g_project_id = os.environ.get("PROJECT_ID")
             g_private_key_id = os.environ.get("PRIVATE_KEY_ID")
@@ -43,8 +41,6 @@ if __name__ == "__main__":
                 "auth_provider_x509_cert_url": g_auth_provider_x509_cert_url,
                 "client_x509_cert_url": g_client_x509_cert_url,
             }
-            sys.stderr.write("GCloud map: {}\n".format(
-                json.dumps(gcloup_map, sort_keys=False, indent=4)))
             credentials = service_account.Credentials.from_service_account_info(
                 gcloup_map, scopes=['https://www.googleapis.com/auth/cloud-platform', ])
             client = vision.ImageAnnotatorClient(
@@ -74,8 +70,6 @@ if __name__ == "__main__":
             if len(landmarks) > 0:
                 possible_landmarks = set(
                     [landmark.description for landmark in landmarks])
-                sys.stderr.write("Possible landmarks: {}\n"
-                                 .format(possible_landmarks))
                 for landmark in possible_landmarks:
                     tweet_success = obj.get("tweet_success")
                     requests.post(tweet_success, json={
@@ -90,5 +84,11 @@ if __name__ == "__main__":
                     "tweet_id": tweet_id,
                 })
         except Exception as ex:
-            sys.stderr.write(str(ex))
+            sys.stderr.write("STDIN data: {}\n".format(
+                json.dumps(obj, sort_keys=False, indent=4)))
+            sys.stderr.write("ENV: {}\n".format(
+                json.dumps(dict(os.environ), sort_keys=False, indent=4)))
+            sys.stderr.write("----------------------------\n{}"
+                             "\n----------------------------"
+                             .format(str(ex)))
             sys.exit(0)
