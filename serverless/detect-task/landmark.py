@@ -50,8 +50,7 @@ if __name__ == "__main__":
                 gcloup_map, scopes=['https://www.googleapis.com/auth/cloud-platform', ])
             client = vision.ImageAnnotatorClient(
                 credentials=credentials,
-                scopes=['https://www.googleapis.com/auth/cloud-platform', ]
-            )
+                scopes=['https://www.googleapis.com/auth/cloud-platform', ])
 
             obj = json.loads(sys.stdin.read())
             image_url = obj.get("media_url")
@@ -60,33 +59,41 @@ if __name__ == "__main__":
                 sys.stderr.write("Empty media URL")
                 raise Exception("Empty media URL")
             # need to download image, remote image URI is not stable
-            filename, _ = request.urlretrieve(image_url)
-            with open(filename, 'rb') as image_file:
-                content = image_file.read()
-                image = types.Image(content=content)
-                response = client.landmark_detection(image=image)
-                landmarks = response.landmark_annotations
+            user = obj.get("user")
+            tweet_id = obj.get("tweet_id")
+            content = None
+            try:
+                filename, _ = request.urlretrieve(image_url)
+                with open(filename, 'rb') as image_file:
+                    content = image_file.read()
+            except Exception as ex:
+                # TODO(denismakogon): tweet with bad image URL
+                tweet_fail = obj.get("tweet_fail")
+                requests.post(tweet_fail, json={
+                    "user": user,
+                    "tweet_id": tweet_id,
+                    "bad_image_source":  True,
+                })
+                raise ex
+            image = types.Image(content=content)
+            response = client.landmark_detection(image=image)
+            landmarks = response.landmark_annotations
 
-                user = obj.get("user")
-                tweet_id = obj.get("tweet_id")
-
-                if len(landmarks) > 0:
-                    possible_landmarks = set(
-                        [landmark.description for landmark in landmarks])
-                    for landmark in possible_landmarks:
-                        # TODO(denismakogon): post tweet with each possible landmark
-                        tweet_success = obj.get("tweet_success")
-                        requests.post(tweet_success, json={
-                            "user": user,
-                            "tweet_id": tweet_id,
-                            "landmark": landmark,
-                        })
-                else:
-                    # TODO(denismakogon): tweet failed to detect
-                    tweet_fail = obj.get("tweet_fail")
-                    requests.post(tweet_fail, json={
+            if len(landmarks) > 0:
+                possible_landmarks = set(
+                    [landmark.description for landmark in landmarks])
+                for landmark in possible_landmarks:
+                    tweet_success = obj.get("tweet_success")
+                    requests.post(tweet_success, json={
                         "user": user,
                         "tweet_id": tweet_id,
+                        "landmark": landmark,
                     })
+            else:
+                tweet_fail = obj.get("tweet_fail")
+                requests.post(tweet_fail, json={
+                    "user": user,
+                    "tweet_id": tweet_id,
+                })
         except Exception as ex:
             sys.stderr.write(str(ex))

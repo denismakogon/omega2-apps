@@ -9,8 +9,9 @@ import (
 )
 
 type RequestPayload struct {
-	TweetID string `json:"tweet_id"`
-	User    string `json:"user"`
+	TweetID        string `json:"tweet_id"`
+	User           string `json:"user"`
+	BadImageSource bool   `json:"bad_image_source,omitempty"`
 }
 
 func main() {
@@ -40,7 +41,13 @@ func main() {
 	}
 	v := url.Values{}
 	v.Set("in_reply_to_status_id", r.TweetID)
-	_, err = api.PostTweet(fmt.Sprintf("Hey, %v! Had to admit, i don't know where is it =(", r.User), v)
+	msg := ""
+	if !r.BadImageSource {
+		msg = fmt.Sprintf(`Hey, %v! Had to admit, i don't know where is it ¯\_(ツ)_/¯`, r.User)
+	} else {
+		msg = fmt.Sprintf(`Hey, %v! Seems like bad image ¯\_(ツ)_/¯, try another one...`, r.User)
+	}
+	_, err = api.PostTweet(msg, v)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "unable to post tweet for %v, got error %v", r.User, err.Error())
 		return
