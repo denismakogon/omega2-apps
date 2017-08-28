@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"bytes"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"github.com/denismakogon/omega2-apps/serverless/twitter-daemon/api"
 	"io/ioutil"
@@ -13,11 +12,11 @@ import (
 	"strconv"
 )
 
-func writeBadResponse(buf *bytes.Buffer, resp *http.Response, err error) {
+func writeBadResponse(buf *bytes.Buffer, resp *http.Response, errMsg string) {
 	resp.StatusCode = 500
 	resp.Status = http.StatusText(resp.StatusCode)
-	fmt.Fprintln(buf, err)
-	fmt.Fprintf(os.Stderr, err.Error())
+	fmt.Fprintln(buf, errMsg)
+	fmt.Fprintf(os.Stderr, errMsg)
 }
 
 func main() {
@@ -40,42 +39,57 @@ func main() {
 		req, err := http.ReadRequest(r)
 		var buf bytes.Buffer
 		if err != nil {
-			writeBadResponse(&buf, &res, err)
+			writeBadResponse(&buf, &res,
+				fmt.Sprintf("Unable to read request from STDIN, "+
+					"it might be empty. Error: %v", err.Error()))
 		} else {
 			ok, err := twitterAPI.VerifyCredentials()
 			if !ok {
 				writeBadResponse(
-					&buf, &res, errors.New("Unable to authorize to twitter."))
+					&buf, &res, "Unable to authorize to twitter.")
 			}
 			if err != nil {
-				writeBadResponse(&buf, &res, err)
+				writeBadResponse(&buf, &res,
+					fmt.Sprintf("Unable to authorize to twitter. "+
+						"Error: %v", err.Error()))
 			} else {
 				l, _ := strconv.Atoi(req.Header.Get("Content-Length"))
 				p := make([]byte, l)
 				_, err = r.Read(p)
 				if err != nil {
-					writeBadResponse(&buf, &res, err)
+					writeBadResponse(&buf, &res,
+						fmt.Sprintf("Unable to read request data. "+
+							"Error: %v", err.Error()))
 				} else {
 					payload := &api.RequestPayload{}
 					err = json.Unmarshal(p, payload)
 					if err != nil {
-						writeBadResponse(&buf, &res, err)
+						writeBadResponse(&buf, &res,
+							fmt.Sprintf("Unable to unmarshal request data. "+
+								"Error: %v", err.Error()))
 					} else {
+						fmt.Fprintf(os.Stderr, fmt.Sprintf("TweetID: %v", payload.TweetIDInt64))
 						tweet, err := twitterAPI.GetTweet(payload.TweetIDInt64, nil)
-						if err == nil {
-							err := api.ProcessTweets(tweet, httpClient, payload.APIURL, "")
+						if err != nil {
+							writeBadResponse(&buf, &res,
+								fmt.Sprintf("Unable to get tweet. "+
+									"Error: %v", err.Error()))
+						} else {
+							err = api.ProcessTweets(tweet, httpClient, payload.APIURL, "")
 							if err != nil {
-								writeBadResponse(&buf, &res, err)
+								writeBadResponse(&buf, &res,
+									fmt.Sprintf("Unable to submit tweet processing. "+
+										"Error: %v", err.Error()))
 							} else {
 								fmt.Fprint(&buf, "OK\n")
-								res.Body = ioutil.NopCloser(&buf)
-								res.ContentLength = int64(buf.Len())
-								res.Write(os.Stdout)
 							}
 						}
 					}
 				}
 			}
 		}
+		res.Body = ioutil.NopCloser(&buf)
+		res.ContentLength = int64(buf.Len())
+		res.Write(os.Stdout)
 	}
 }

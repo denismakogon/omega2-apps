@@ -112,6 +112,7 @@ func DoRequest(payload *RequestPayload, req *http.Request, httpClient *http.Clie
 	if err != nil {
 		return err
 	}
+	defer resp.Body.Close()
 	if resp.StatusCode == http.StatusAccepted || resp.StatusCode == http.StatusOK {
 		callID := new(CallID)
 		err = json.NewDecoder(resp.Body).Decode(&callID)

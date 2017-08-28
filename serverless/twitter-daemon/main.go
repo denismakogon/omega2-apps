@@ -41,9 +41,9 @@ func main() {
 	}
 
 	wg := new(sync.WaitGroup)
+	withSchemaAPI := fmt.Sprintf("http://%v", fnAPIURL)
 
 	for {
-		// make this async as hell with WaitGroup
 		ok, err := omega.TwitterAPI.VerifyCredentials()
 		if !ok {
 			fmt.Println(err.Error())
@@ -61,14 +61,14 @@ func main() {
 				go func() {
 					defer wg.Done()
 					hotTweetDispatch, err := http.NewRequest(
-						http.MethodPost, fmt.Sprintf("%s/r/where-is-it/tweet-dispatch", fnAPIURL),
+						http.MethodPost, fmt.Sprintf("%s/r/where-is-it/tweet-dispatch", withSchemaAPI),
 						nil)
 					if err != nil {
 						panic(err.Error())
 					}
 					payload := &api.RequestPayload{
 						TweetIDInt64: tweet.Id,
-						APIURL:       fmt.Sprintf("http://%v", fnAPIURL),
+						APIURL:       withSchemaAPI,
 					}
 					err = api.DoRequest(payload, hotTweetDispatch, httpClient, fnToken)
 					if err != nil {

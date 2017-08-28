@@ -34,7 +34,7 @@ func recreateRoute(ctx context.Context, fnclient *client.Functions, appName, ima
 				Path:        routePath,
 				Type:        routeType,
 				Timeout:     &timeout,
-				Memory:      uint64(256),
+				Memory:      uint64(126),
 				Format:      fformat,
 				IDLETimeout: &idleTimeout,
 			},
@@ -134,7 +134,7 @@ func setupAppAndRoutes(fnclient *client.Functions, gcloud *GCloudSecret, twitter
 		return errors.New(err.Error())
 	}
 	err = recreateRoute(ctx, fnclient, app,
-		"denismakogon/tweet-dispatch:0.0.1",
+		"denismakogon/tweet-dispatcher:0.0.4",
 		"/tweet-dispatch",
 		"sync",
 		"http",
