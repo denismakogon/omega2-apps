@@ -97,7 +97,7 @@ func Append(obj interface{}, config map[string]string) (map[string]string, error
 	return config, nil
 }
 
-func DoRequest(payload *RequestPayload, req *http.Request, httpClient *http.Client, fnToken string) error {
+func DoUncheckedRequest(payload *RequestPayload, req *http.Request, httpClient *http.Client, fnToken string) (*http.Response, error) {
 	if fnToken != "" {
 		req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", fnToken))
 	}
@@ -105,14 +105,19 @@ func DoRequest(payload *RequestPayload, req *http.Request, httpClient *http.Clie
 
 	body, err := json.Marshal(payload)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	req.Body = ioutil.NopCloser(bytes.NewReader(body))
 	resp, err := httpClient.Do(req)
-	if err != nil {
-		return err
-	}
 	defer resp.Body.Close()
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func DoRequest(payload *RequestPayload, req *http.Request, httpClient *http.Client, fnToken string) error {
+	resp, err := DoUncheckedRequest(payload, req, httpClient, fnToken)
 	if resp.StatusCode == http.StatusAccepted || resp.StatusCode == http.StatusOK {
 		callID := new(CallID)
 		err = json.NewDecoder(resp.Body).Decode(&callID)

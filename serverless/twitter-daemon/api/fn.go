@@ -134,7 +134,7 @@ func setupAppAndRoutes(fnclient *client.Functions, gcloud *GCloudSecret, twitter
 		return errors.New(err.Error())
 	}
 	err = recreateRoute(ctx, fnclient, app,
-		"denismakogon/tweet-dispatcher:0.0.4",
+		"denismakogon/tweet-dispatcher:0.0.5",
 		"/tweet-dispatch",
 		"sync",
 		"http",

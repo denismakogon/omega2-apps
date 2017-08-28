@@ -70,7 +70,7 @@ func main() {
 						TweetIDInt64: tweet.Id,
 						APIURL:       withSchemaAPI,
 					}
-					err = api.DoRequest(payload, hotTweetDispatch, httpClient, fnToken)
+					_, err = api.DoUncheckedRequest(payload, hotTweetDispatch, httpClient, fnToken)
 					if err != nil {
 						panic(err.Error())
 					}
