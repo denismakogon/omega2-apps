@@ -58,8 +58,6 @@ func (omega *OnionOmega2) ProcessTweets(tweet anaconda.Tweet, httpClient *http.C
 		return err
 	}
 
-	omega.PrintTweetInfo(tweet)
-
 	if len(tweet.Entities.Media) != 0 {
 		media := tweet.Entities.Media[0]
 		user := fmt.Sprintf("@%v", tweet.User.ScreenName)
@@ -68,7 +66,7 @@ func (omega *OnionOmega2) ProcessTweets(tweet anaconda.Tweet, httpClient *http.C
 				User:    user,
 				TweetID: tweet.IdStr,
 			}
-			err := doRequest(payload, fail, httpClient, fnToken)
+			err := DoRequest(payload, fail, httpClient, fnToken)
 			if err != nil {
 				return err
 			}
@@ -80,7 +78,7 @@ func (omega *OnionOmega2) ProcessTweets(tweet anaconda.Tweet, httpClient *http.C
 				TweetFail:    fmt.Sprintf("%s/r/where-is-it/tweet-fail", fnAPIURL),
 				TweetSuccess: fmt.Sprintf("%s/r/where-is-it/tweet-success", fnAPIURL),
 			}
-			err := doRequest(payload, detect, httpClient, fnToken)
+			err := DoRequest(payload, detect, httpClient, fnToken)
 			if err != nil {
 				return err
 			}

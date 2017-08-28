@@ -25,7 +25,7 @@ type ErrBody struct {
 	Error ErrMessage `json:"error"`
 }
 
-func recreateRoute(ctx context.Context, fnclient *client.Functions, appName, image, routePath, routeType string, timeout int32) error {
+func recreateRoute(ctx context.Context, fnclient *client.Functions, appName, image, routePath, routeType, fformat string, timeout int32) error {
 	cfg := &routes.PostAppsAppRoutesParams{
 		App: appName,
 		Body: &models.RouteWrapper{
@@ -35,6 +35,7 @@ func recreateRoute(ctx context.Context, fnclient *client.Functions, appName, ima
 				Type:    routeType,
 				Timeout: &timeout,
 				Memory:  uint64(256),
+				Format:  fformat,
 			},
 		},
 		Context: ctx,
@@ -104,18 +105,39 @@ func setupAppAndRoutes(fnclient *client.Functions, gcloud *GCloudSecret, twitter
 		return errors.New(err.Error())
 	}
 
-	err = recreateRoute(ctx, fnclient, app, "denismakogon/tweet-fail:0.0.2",
-		"/tweet-fail", "async", 60)
+	err = recreateRoute(ctx, fnclient, app,
+		"denismakogon/tweet-fail:0.0.2",
+		"/tweet-fail",
+		"async",
+		"default",
+		60)
 	if err != nil {
 		return errors.New(err.Error())
 	}
-	err = recreateRoute(ctx, fnclient, app, "denismakogon/detect-task:0.0.5",
-		"/detect-where", "async", 60)
+	err = recreateRoute(ctx, fnclient, app,
+		"denismakogon/detect-task:0.0.5",
+		"/detect-where",
+		"async",
+		"default",
+		60)
 	if err != nil {
 		return errors.New(err.Error())
 	}
-	err = recreateRoute(ctx, fnclient, app, "denismakogon/tweet-success:0.0.2",
-		"/tweet-success", "async", 60)
+	err = recreateRoute(ctx, fnclient, app,
+		"denismakogon/tweet-success:0.0.2",
+		"/tweet-success",
+		"async",
+		"default",
+		60)
+	if err != nil {
+		return errors.New(err.Error())
+	}
+	err = recreateRoute(ctx, fnclient, app,
+		"denismakogon/tweet-dispatch:0.0.1",
+		"/tweet-dispatch",
+		"sync",
+		"http",
+		60)
 	if err != nil {
 		return errors.New(err.Error())
 	}

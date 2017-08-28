@@ -1,13 +1,10 @@
 package main
 
 import (
-	"crypto/tls"
 	"fmt"
 	"github.com/denismakogon/omega2-apps/serverless/twitter-daemon/api"
-	"net"
 	"net/http"
 	"net/url"
-	"os"
 	"sync"
 	"time"
 )
@@ -31,19 +28,7 @@ func main() {
 		panic(err.Error())
 	}
 
-	transport := &http.Transport{
-		Proxy: http.ProxyFromEnvironment,
-		Dial: (&net.Dialer{
-			Timeout:   10 * time.Second,
-			KeepAlive: 120 * time.Second,
-		}).Dial,
-		MaxIdleConnsPerHost: 512,
-		TLSHandshakeTimeout: 10 * time.Second,
-		TLSClientConfig: &tls.Config{
-			ClientSessionCache: tls.NewLRUClientSessionCache(4096),
-		},
-	}
-	httpClient := &http.Client{Transport: transport}
+	httpClient := api.SetupHTTPClient()
 
 	// get latest 200 tweets
 	v := url.Values{}
@@ -72,11 +57,22 @@ func main() {
 		if len(tweets) != 0 {
 			wg.Add(len(tweets))
 			for _, tweet := range tweets {
+				omega.PrintTweetInfo(tweet)
 				go func() {
 					defer wg.Done()
-					err := omega.ProcessTweets(tweet, httpClient, fmt.Sprintf("http://%v", fnAPIURL), fnToken)
+					hotTweetDispatch, err := http.NewRequest(
+						http.MethodPost, fmt.Sprintf("%s/r/where-is-it/tweet-dispatch", fnAPIURL),
+						nil)
 					if err != nil {
-						fmt.Fprint(os.Stderr, err.Error())
+						panic(err.Error())
+					}
+					payload := &api.RequestPayload{
+						TweetIDInt64: tweet.Id,
+						APIURL:       fmt.Sprintf("http://%v", fnAPIURL),
+					}
+					err = api.DoRequest(payload, hotTweetDispatch, httpClient, fnToken)
+					if err != nil {
+						panic(err.Error())
 					}
 				}()
 			}

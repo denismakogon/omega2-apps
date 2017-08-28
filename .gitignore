@@ -1,2 +1,5 @@
 hello_world
 mux_server
+Gopkg.lock
+Gopkg.toml
+vendor/

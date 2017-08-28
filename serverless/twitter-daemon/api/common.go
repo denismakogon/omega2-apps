@@ -2,21 +2,26 @@ package api
 
 import (
 	"bytes"
+	"crypto/tls"
 	"encoding/json"
 	"fmt"
 	"github.com/ChimeraCoder/anaconda"
 	"io/ioutil"
+	"net"
 	"net/http"
 	"net/url"
 	"os"
 	"reflect"
 	"strings"
+	"time"
 )
 
 type RequestPayload struct {
-	TweetID      string `json:"tweet_id"`
+	APIURL       string `json:"api_url"`
+	TweetID      string `json:"tweet_id,omitempty"`
+	TweetIDInt64 int64  `json:"tweet_id_int_64,omitempty"`
 	MediaURL     string `json:"media_url,omitempty"`
-	User         string `json:"user"`
+	User         string `json:"user,omitempty"`
 	TweetFail    string `json:"tweet_fail,omitempty"`
 	TweetSuccess string `json:"tweet_success,omitempty"`
 }
@@ -25,6 +30,22 @@ type OnionOmega2 struct {
 	TwitterAPI   *anaconda.TwitterApi
 	GCloudAuth   *GCloudSecret
 	SearchValues url.Values
+}
+
+func SetupHTTPClient() *http.Client {
+	transport := &http.Transport{
+		Proxy: http.ProxyFromEnvironment,
+		Dial: (&net.Dialer{
+			Timeout:   10 * time.Second,
+			KeepAlive: 120 * time.Second,
+		}).Dial,
+		MaxIdleConnsPerHost: 512,
+		TLSHandshakeTimeout: 10 * time.Second,
+		TLSClientConfig: &tls.Config{
+			ClientSessionCache: tls.NewLRUClientSessionCache(4096),
+		},
+	}
+	return &http.Client{Transport: transport}
 }
 
 func StructFromEnv(i interface{}) error {
@@ -76,7 +97,7 @@ func Append(obj interface{}, config map[string]string) (map[string]string, error
 	return config, nil
 }
 
-func doRequest(payload *RequestPayload, req *http.Request, httpClient *http.Client, fnToken string) error {
+func DoRequest(payload *RequestPayload, req *http.Request, httpClient *http.Client, fnToken string) error {
 	if fnToken != "" {
 		req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", fnToken))
 	}
