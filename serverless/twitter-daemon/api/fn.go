@@ -25,17 +25,18 @@ type ErrBody struct {
 	Error ErrMessage `json:"error"`
 }
 
-func recreateRoute(ctx context.Context, fnclient *client.Functions, appName, image, routePath, routeType, fformat string, timeout int32) error {
+func recreateRoute(ctx context.Context, fnclient *client.Functions, appName, image, routePath, routeType, fformat string, timeout, idleTimeout int32) error {
 	cfg := &routes.PostAppsAppRoutesParams{
 		App: appName,
 		Body: &models.RouteWrapper{
 			Route: &models.Route{
-				Image:   image,
-				Path:    routePath,
-				Type:    routeType,
-				Timeout: &timeout,
-				Memory:  uint64(256),
-				Format:  fformat,
+				Image:       image,
+				Path:        routePath,
+				Type:        routeType,
+				Timeout:     &timeout,
+				Memory:      uint64(256),
+				Format:      fformat,
+				IDLETimeout: &idleTimeout,
 			},
 		},
 		Context: ctx,
@@ -110,7 +111,7 @@ func setupAppAndRoutes(fnclient *client.Functions, gcloud *GCloudSecret, twitter
 		"/tweet-fail",
 		"async",
 		"default",
-		60)
+		60, 120)
 	if err != nil {
 		return errors.New(err.Error())
 	}
@@ -119,7 +120,7 @@ func setupAppAndRoutes(fnclient *client.Functions, gcloud *GCloudSecret, twitter
 		"/detect-where",
 		"async",
 		"default",
-		60)
+		60, 120)
 	if err != nil {
 		return errors.New(err.Error())
 	}
@@ -128,7 +129,7 @@ func setupAppAndRoutes(fnclient *client.Functions, gcloud *GCloudSecret, twitter
 		"/tweet-success",
 		"async",
 		"default",
-		60)
+		60, 120)
 	if err != nil {
 		return errors.New(err.Error())
 	}
@@ -137,7 +138,7 @@ func setupAppAndRoutes(fnclient *client.Functions, gcloud *GCloudSecret, twitter
 		"/tweet-dispatch",
 		"sync",
 		"http",
-		60)
+		60, 120)
 	if err != nil {
 		return errors.New(err.Error())
 	}
