@@ -20,6 +20,14 @@ type GCloudSecret struct {
 	ClientX509CertURL       string `json:"client_x509_cert_url"`
 }
 
+func (g *GCloudSecret) FromEnv() error {
+	err := StructFromEnv(g)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func (g *GCloudSecret) FromFile() error {
 	gcloudCredsPath := os.Getenv("GOOGLE_APPLICATION_CREDENTIALS")
 	if gcloudCredsPath != "" {

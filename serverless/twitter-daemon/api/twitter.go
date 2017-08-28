@@ -5,9 +5,7 @@ import (
 	"fmt"
 	"github.com/ChimeraCoder/anaconda"
 	"net/http"
-	"os"
 	"strconv"
-	//"time"
 )
 
 type TwitterSecret struct {
@@ -18,26 +16,13 @@ type TwitterSecret struct {
 }
 
 func (twitter *TwitterSecret) FromEnv() (*anaconda.TwitterApi, error) {
-	consumerKey := os.Getenv("TwitterConsumerKey")
-	if consumerKey == "" {
-		return nil, errors.New("Empty TwitterConsumerKey")
+	err := StructFromEnv(twitter)
+	if err != nil {
+		return nil, err
 	}
-	consumerSecret := os.Getenv("TwitterConsumerSecret")
-	if consumerSecret == "" {
-		return nil, errors.New("TwitterConsumerSecret")
-	}
-	apiToken := os.Getenv("TwitterAccessToken")
-	if apiToken == "" {
-		return nil, errors.New("TwitterAccessToken")
-	}
-	apiTokenSecret := os.Getenv("TwitterAccessTokenSecret")
-	if apiTokenSecret == "" {
-		return nil, errors.New("TwitterAccessTokenSecret")
-	}
-
-	anaconda.SetConsumerKey(consumerKey)
-	anaconda.SetConsumerSecret(consumerSecret)
-	api := anaconda.NewTwitterApi(apiToken, apiTokenSecret)
+	anaconda.SetConsumerKey(twitter.ConsumerKey)
+	anaconda.SetConsumerSecret(twitter.ConsumerSecret)
+	api := anaconda.NewTwitterApi(twitter.APIToken, twitter.APITokenSecret)
 	ok, err := api.VerifyCredentials()
 	if !ok {
 		return nil, errors.New("Unauthorized to Twitter")
@@ -45,10 +30,6 @@ func (twitter *TwitterSecret) FromEnv() (*anaconda.TwitterApi, error) {
 	if err != nil {
 		return nil, err
 	}
-	twitter.ConsumerKey = consumerKey
-	twitter.ConsumerSecret = consumerSecret
-	twitter.APIToken = apiToken
-	twitter.APITokenSecret = apiTokenSecret
 	return api, nil
 }
 

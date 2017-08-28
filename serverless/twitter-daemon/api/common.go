@@ -8,7 +8,9 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"os"
 	"reflect"
+	"strings"
 )
 
 type RequestPayload struct {
@@ -23,6 +25,26 @@ type OnionOmega2 struct {
 	TwitterAPI   *anaconda.TwitterApi
 	GCloudAuth   *GCloudSecret
 	SearchValues url.Values
+}
+
+func StructFromEnv(i interface{}) error {
+	v := reflect.ValueOf(i)
+	if v.Kind() == reflect.Ptr {
+		v = v.Elem()
+	}
+
+	typ := v.Type()
+	for i := 0; i < v.NumField(); i++ {
+		fi := typ.Field(i)
+		if tagValue := fi.Tag.Get("json"); tagValue != "" {
+			value := os.Getenv(strings.ToUpper(tagValue))
+			if value == "" {
+				return fmt.Errorf("Missing env var: %v", strings.ToUpper(tagValue))
+			}
+			v.FieldByName(fi.Name).SetString(value)
+		}
+	}
+	return nil
 }
 
 func ToMap(in interface{}) (map[string]interface{}, error) {
