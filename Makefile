@@ -23,22 +23,28 @@ ci-build-twitter-daemon:
 	cd serverless/twitter-daemon; \
 	${GOPATH}/bin/dep ensure; \
 	go build -race; \
-	rm -fr twitter_daemon
+	rm -fr twitter-daemon
 
 ci-build-twitter-daemon-mipsle:
 	cd serverless/twitter-daemon; \
 	${GOPATH}/bin/dep ensure; \
 	GOOS=linux GOARCH=mipsle go build -ldflags "-s -w" -compiler gc; \
-	rm -fr twitter_daemon
+	rm -fr twitter-daemon
 
 ci-build-tweet-fail:
 	cd serverless/tweet-fail; \
 	${GOPATH}/bin/dep ensure; \
 	go build -race; \
-	rm -fr twitter_daemon
+	rm -fr tweet-fail
 
 ci-build-tweet-success:
 	cd serverless/tweet-success; \
 	${GOPATH}/bin/dep ensure; \
 	go build -race; \
-	rm -fr twitter_daemon
+	rm -fr tweet-success
+
+ci-build-tweet-dispatcher:
+	cd serverless/tweet-dispatcher; \
+	${GOPATH}/bin/dep ensure; \
+	go build -race; \
+	rm -fr tweet-dispatcher

@@ -63,7 +63,7 @@ func main() {
 					} else {
 						tweet, err := twitterAPI.GetTweet(payload.TweetIDInt64, nil)
 						if err == nil {
-							err := api.ProcessTweet(tweet, httpClient, payload.APIURL, "")
+							err := api.ProcessTweets(tweet, httpClient, payload.APIURL, "")
 							if err != nil {
 								writeBadResponse(&buf, &res, err)
 							} else {
