@@ -63,10 +63,7 @@ func main() {
 					} else {
 						tweet, err := twitterAPI.GetTweet(payload.TweetIDInt64, nil)
 						if err == nil {
-							omega := api.OnionOmega2{
-								TwitterAPI: twitterAPI,
-							}
-							err := omega.ProcessTweets(tweet, httpClient, payload.APIURL, "")
+							err := api.ProcessTweet(tweet, httpClient, payload.APIURL, "")
 							if err != nil {
 								writeBadResponse(&buf, &res, err)
 							} else {

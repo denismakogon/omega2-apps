@@ -45,7 +45,7 @@ func (omega *OnionOmega2) GetRecentMentions() (tweets []anaconda.Tweet, err erro
 	return tweets, nil
 }
 
-func (omega *OnionOmega2) ProcessTweets(tweet anaconda.Tweet, httpClient *http.Client, fnAPIURL, fnToken string) error {
+func ProcessTweets(tweet anaconda.Tweet, httpClient *http.Client, fnAPIURL, fnToken string) error {
 	detect, err := http.NewRequest(
 		http.MethodPost, fmt.Sprintf("%s/r/where-is-it/detect-where", fnAPIURL),
 		nil)
