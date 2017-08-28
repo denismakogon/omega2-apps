@@ -75,14 +75,15 @@ func doRequest(payload *RequestPayload, req *http.Request, httpClient *http.Clie
 		if err != nil {
 			return err
 		}
-		fmt.Printf("New detect func submitted. Call ID: %v", callID.ID)
+		fmt.Println(fmt.Sprintf("New detect func submitted. Call ID: %v", callID.ID))
 	} else {
 		apiError := new(ErrBody)
 		err = json.NewDecoder(resp.Body).Decode(&apiError)
 		if err != nil {
 			return err
 		}
-		fmt.Printf("Error during detect func submittion. Call ID: %v", apiError.Error.Message)
+		fmt.Println(fmt.Sprintf("Error during detect func submittion. Call ID: %v",
+			apiError.Error.Message))
 	}
 	return nil
 }

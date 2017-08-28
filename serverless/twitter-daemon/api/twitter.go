@@ -49,8 +49,6 @@ func (twitter *TwitterSecret) FromEnv() (*anaconda.TwitterApi, error) {
 	twitter.ConsumerSecret = consumerSecret
 	twitter.APIToken = apiToken
 	twitter.APITokenSecret = apiTokenSecret
-
-	//api.SetDelay(5 * time.Second)
 	return api, nil
 }
 
@@ -111,6 +109,6 @@ func (omega *OnionOmega2) ProcessTweets(tweet anaconda.Tweet, httpClient *http.C
 }
 
 func (omega *OnionOmega2) PrintTweetInfo(tweet anaconda.Tweet) {
-	fmt.Printf(fmt.Sprintf(
-		"Found new tweet: %v from @%v.\n", tweet.Text, tweet.User.ScreenName))
+	fmt.Println(fmt.Sprintf(
+		"[%v] found new tweet: %v from @%v.\n", tweet.CreatedAt, tweet.Text, tweet.User.ScreenName))
 }
