@@ -1,12 +1,5 @@
 package api
 
-import (
-	"encoding/json"
-	"errors"
-	"io/ioutil"
-	"os"
-)
-
 type GCloudSecret struct {
 	Type                    string `json:"type"`
 	ProjectID               string `json:"project_id"`
@@ -29,18 +22,6 @@ func (g *GCloudSecret) FromEnv() error {
 }
 
 func (g *GCloudSecret) FromFile() error {
-	gcloudCredsPath := os.Getenv("GOOGLE_APPLICATION_CREDENTIALS")
-	if gcloudCredsPath != "" {
-		raw, err := ioutil.ReadFile(gcloudCredsPath)
-		if err != nil {
-			return err
-		}
-		err = json.Unmarshal(raw, g)
-		if err != nil {
-			return err
-		}
-		return nil
-	} else {
-		return errors.New("GOOGLE_APPLICATION_CREDENTIALS env var is not set")
-	}
+	envVar := "GOOGLE_APPLICATION_CREDENTIALS"
+	return StructFromFile(g, envVar)
 }

@@ -13,7 +13,7 @@ import (
 func main() {
 
 	twitter := new(api.TwitterSecret)
-	twitterAPI, err := twitter.FromEnv()
+	twitterAPI, err := twitter.FromFile()
 	if err != nil {
 		panic(err.Error())
 	}

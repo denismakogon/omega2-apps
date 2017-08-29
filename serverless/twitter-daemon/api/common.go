@@ -72,6 +72,23 @@ func StructFromEnv(i interface{}) error {
 	return nil
 }
 
+func StructFromFile(i interface{}, envVar string) error {
+	fPath := os.Getenv(envVar)
+	if fPath != "" {
+		raw, err := ioutil.ReadFile(fPath)
+		if err != nil {
+			return err
+		}
+		err = json.Unmarshal(raw, i)
+		if err != nil {
+			return err
+		}
+		return nil
+	} else {
+		return fmt.Errorf("%v env var is not set", envVar)
+	}
+}
+
 func ToMap(in interface{}) (map[string]interface{}, error) {
 	out := make(map[string]interface{})
 

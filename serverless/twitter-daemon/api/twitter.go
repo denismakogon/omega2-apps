@@ -15,6 +15,25 @@ type TwitterSecret struct {
 	APITokenSecret string `json:"api_key_secret"`
 }
 
+func (twitter *TwitterSecret) FromFile() (*anaconda.TwitterApi, error) {
+	envVar := "TWITTER_APPLICATION_CREDENTIALS"
+	err := StructFromFile(twitter, envVar)
+	if err != nil {
+		return nil, err
+	}
+	anaconda.SetConsumerKey(twitter.ConsumerKey)
+	anaconda.SetConsumerSecret(twitter.ConsumerSecret)
+	api := anaconda.NewTwitterApi(twitter.APIToken, twitter.APITokenSecret)
+	ok, err := api.VerifyCredentials()
+	if !ok {
+		return nil, errors.New("Unauthorized to Twitter")
+	}
+	if err != nil {
+		return nil, err
+	}
+	return api, nil
+}
+
 func (twitter *TwitterSecret) FromEnv() (*anaconda.TwitterApi, error) {
 	err := StructFromEnv(twitter)
 	if err != nil {
