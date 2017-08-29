@@ -34,7 +34,7 @@ func (twitter *TwitterSecret) FromEnv() (*anaconda.TwitterApi, error) {
 }
 
 func (omega *OnionOmega2) GetRecentMentions() (tweets []anaconda.Tweet, err error) {
-	tweets, err = omega.TwitterAPI.GetMentionsTimeline(omega.SearchValues)
+	tweets, err = omega.TwitterAPI.GetMentionsTimeline(*omega.SearchValues)
 	if err != nil {
 		return nil, err
 	}

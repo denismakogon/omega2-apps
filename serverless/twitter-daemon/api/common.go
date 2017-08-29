@@ -29,7 +29,11 @@ type RequestPayload struct {
 type OnionOmega2 struct {
 	TwitterAPI   *anaconda.TwitterApi
 	GCloudAuth   *GCloudSecret
-	SearchValues url.Values
+	SearchValues *url.Values
+}
+
+func (omega *OnionOmega2) SetTweetIDToStartFrom(tweetID string) {
+	omega.SearchValues.Set("since_id", tweetID)
 }
 
 func SetupHTTPClient() *http.Client {

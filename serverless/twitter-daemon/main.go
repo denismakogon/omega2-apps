@@ -5,6 +5,7 @@ import (
 	"github.com/denismakogon/omega2-apps/serverless/twitter-daemon/api"
 	"net/http"
 	"net/url"
+	"os"
 	"sync"
 	"time"
 )
@@ -36,10 +37,15 @@ func main() {
 
 	omega := api.OnionOmega2{
 		TwitterAPI:   twitterAPI,
-		SearchValues: v,
+		SearchValues: &v,
 		GCloudAuth:   gc,
 	}
-
+	tweetID := os.Getenv("InitialTweetID")
+	if tweetID == "" {
+		// start to look for tweets from the very beginning
+		panic("Initial tweet ID env var is not set, but suppose to be!")
+	}
+	omega.SetTweetIDToStartFrom(tweetID)
 	wg := new(sync.WaitGroup)
 	withSchemaAPI := fmt.Sprintf("http://%v", fnAPIURL)
 
