@@ -12,17 +12,18 @@ from google.cloud.vision import types
 if __name__ == "__main__":
     if not os.isatty(sys.stdin.fileno()):
         try:
-            g_type = os.environ.get("TYPE")
-            g_project_id = os.environ.get("PROJECT_ID")
-            g_private_key_id = os.environ.get("PRIVATE_KEY_ID")
-            g_private_key = os.environ.get("PRIVATE_KEY")
-            g_client_email = os.environ.get("CLIENT_EMAIL")
-            g_client_id = os.environ.get("CLIENT_ID")
-            g_auth_uri = os.environ.get("AUTH_URI")
-            g_token_uri = os.environ.get("TOKEN_URI")
-            g_auth_provider_x509_cert_url = os.environ.get("AUTH_PROVIDER_X509_CERT_URL")
-            g_client_x509_cert_url = os.environ.get("CLIENT_X509_CERT_URL")
-
+            g_type = os.environ.get("TYPE", os.environ.get("type"))
+            g_project_id = os.environ.get("PROJECT_ID", os.environ.get("project_id"))
+            g_private_key_id = os.environ.get("PRIVATE_KEY_ID", os.environ.get("private_key_id"))
+            g_private_key = os.environ.get("PRIVATE_KEY", os.environ.get("private_key"))
+            g_client_email = os.environ.get("CLIENT_EMAIL", os.environ.get("client_email"))
+            g_client_id = os.environ.get("CLIENT_ID", os.environ.get("client_id"))
+            g_auth_uri = os.environ.get("AUTH_URI", os.environ.get("auth_uri"))
+            g_token_uri = os.environ.get("TOKEN_URI", os.environ.get("token_uri"))
+            g_auth_provider_x509_cert_url = os.environ.get(
+                "AUTH_PROVIDER_X509_CERT_URL", os.environ.get("auth_provider_x509_cert_url"))
+            g_client_x509_cert_url = os.environ.get(
+                "CLIENT_X509_CERT_URL", os.environ.get("client_x509_cert_url"))
             if not all([g_type, g_project_id, g_private_key_id, g_private_key,
                         g_client_email, g_auth_uri, g_token_uri,
                         g_auth_provider_x509_cert_url, g_client_x509_cert_url]):

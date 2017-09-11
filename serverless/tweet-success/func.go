@@ -3,7 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/ChimeraCoder/anaconda"
+	"github.com/denismakogon/omega2-apps/serverless/twitter-daemon/api"
 	"net/url"
 	"os"
 )
@@ -21,16 +21,10 @@ func main() {
 		fmt.Fprintf(os.Stderr, "unable to decode STDIN, got error %v", err.Error())
 		return
 	}
+	twitter := new(api.TwitterSecret)
+	twitterAPI, err := twitter.FromEnv()
 
-	consumerKey := os.Getenv("CONSUMER_KEY")
-	consumerSecret := os.Getenv("CONSUMER_SECRET")
-	apiToken := os.Getenv("API_KEY")
-	apiTokenSecret := os.Getenv("API_KEY_SECRET")
-	anaconda.SetConsumerKey(consumerKey)
-	anaconda.SetConsumerSecret(consumerSecret)
-
-	api := anaconda.NewTwitterApi(apiToken, apiTokenSecret)
-	ok, err := api.VerifyCredentials()
+	ok, err := twitterAPI.VerifyCredentials()
 	if !ok {
 		fmt.Fprint(os.Stderr, "unable to verify credentials\n")
 		return
@@ -41,7 +35,7 @@ func main() {
 	}
 	v := url.Values{}
 	v.Set("in_reply_to_status_id", r.TweetID)
-	_, err = api.PostTweet(fmt.Sprintf("Hey, %v! That should be %v!", r.User, r.Landmark), v)
+	_, err = twitterAPI.PostTweet(fmt.Sprintf("Hey, %v! That should be %v!", r.User, r.Landmark), v)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "unable to post tweet for %v, got error %v", r.User, err.Error())
 		return

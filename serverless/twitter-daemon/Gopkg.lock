@@ -5,7 +5,7 @@
   branch = "master"
   name = "github.com/ChimeraCoder/anaconda"
   packages = ["."]
-  revision = "0530dae79525a856cc778e15c4c2b03c3f6934b9"
+  revision = "b2574bf45ceab73b763dc5e411b25d4ee046f1ac"
 
 [[projects]]
   branch = "master"
@@ -28,8 +28,8 @@
 [[projects]]
   name = "github.com/asaskevich/govalidator"
   packages = ["."]
-  revision = "4918b99a7cb949bb295f3c7bbaf24b577d806e35"
-  version = "v6"
+  revision = "73945b6115bfbbcc57d89b7316e28109364124e1"
+  version = "v7"
 
 [[projects]]
   branch = "master"
@@ -95,7 +95,7 @@
   branch = "master"
   name = "github.com/go-openapi/runtime"
   packages = [".","client"]
-  revision = "d6605b7c17ac3b1033ca794886e6142a4141f5b0"
+  revision = "bf2ff8f7150788b1c7256abb0805ba0410cbbabb"
 
 [[projects]]
   branch = "master"
@@ -125,7 +125,7 @@
   branch = "master"
   name = "github.com/mailru/easyjson"
   packages = ["buffer","jlexer","jwriter"]
-  revision = "3b3bbef4e2d9a6f24d7ee73a894afbc064f0e057"
+  revision = "2a92e673c9a6302dd05c3a691ae1f24aef46457d"
 
 [[projects]]
   branch = "master"
@@ -143,7 +143,7 @@
   branch = "master"
   name = "golang.org/x/text"
   packages = ["internal/gen","internal/triegen","internal/ucd","secure/bidirule","transform","unicode/bidi","unicode/cldr","unicode/norm","unicode/rangetable","width"]
-  revision = "de984aaade05b6b868d6ad3a063e045ed3609f20"
+  revision = "bd91bbf73e9a4a801adbfb97133c992678533126"
 
 [[projects]]
   branch = "v2"
