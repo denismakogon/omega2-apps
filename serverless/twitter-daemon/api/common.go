@@ -17,13 +17,17 @@ import (
 )
 
 type RequestPayload struct {
-	APIURL       string `json:"api_url"`
-	TweetID      string `json:"tweet_id,omitempty"`
-	TweetIDInt64 int64  `json:"tweet_id_int_64,omitempty"`
-	MediaURL     string `json:"media_url,omitempty"`
-	User         string `json:"user,omitempty"`
-	TweetFail    string `json:"tweet_fail,omitempty"`
-	TweetSuccess string `json:"tweet_success,omitempty"`
+	APIURL          string `json:"api_url"`
+	TweetID         string `json:"tweet_id,omitempty"`
+	TweetIDInt64    int64  `json:"tweet_id_int_64,omitempty"`
+	MediaURL        string `json:"media_url,omitempty"`
+	User            string `json:"user,omitempty"`
+	TweetFail       string `json:"tweet_fail,omitempty"`
+	TweetSuccess    string `json:"tweet_success,omitempty"`
+	RecognitionType string `json:"recognition_type"`
+	MainEmotion     string `json:"main_emotion"`
+	AltEmotion      string `json:"alt_emotion"`
+	Landmark        string `json:"landmark"`
 }
 
 type OnionOmega2 struct {

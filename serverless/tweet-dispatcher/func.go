@@ -75,13 +75,24 @@ func main() {
 								fmt.Sprintf("Unable to get tweet. "+
 									"Error: %v", err.Error()))
 						} else {
-							err = api.ProcessTweets(tweet, httpClient, payload.APIURL, "")
-							if err != nil {
-								writeBadResponse(&buf, &res,
-									fmt.Sprintf("Unable to submit tweet processing. "+
-										"Error: %v", err.Error()))
+							if payload.RecognitionType == "landmark" {
+								err = api.ProcessTweetWithLandmark(tweet, httpClient, payload.APIURL, "")
+								if err != nil {
+									writeBadResponse(&buf, &res,
+										fmt.Sprintf("Unable to submit tweet processing. "+
+											"Error: %v", err.Error()))
+								} else {
+									fmt.Fprint(&buf, "OK\n")
+								}
 							} else {
-								fmt.Fprint(&buf, "OK\n")
+								err = api.ProcessTweetWithEmotion(tweet, httpClient, payload.APIURL, "")
+								if err != nil {
+									writeBadResponse(&buf, &res,
+										fmt.Sprintf("Unable to submit tweet processing. "+
+											"Error: %v", err.Error()))
+								} else {
+									fmt.Fprint(&buf, "OK\n")
+								}
 							}
 						}
 					}

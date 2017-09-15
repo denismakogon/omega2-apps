@@ -3,3 +3,16 @@ mux_server
 Gopkg.lock
 Gopkg.toml
 vendor/
+*.egg-info/
+__pycache__
+*.meta
+*.data
+*.tflearn
+*.csv
+*.npy
+*.index
+*.data-*
+checkpoint
+emotion_recognition-*
+data/*
+.idea

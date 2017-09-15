@@ -64,7 +64,27 @@ func (omega *OnionOmega2) GetRecentMentions() (tweets []anaconda.Tweet, err erro
 	return tweets, nil
 }
 
-func ProcessTweets(tweet anaconda.Tweet, httpClient *http.Client, fnAPIURL, fnToken string) error {
+func ProcessTweetWithEmotion(tweet anaconda.Tweet, httpClient *http.Client, fnAPIURL, fnToken string) error {
+	detect, err := http.NewRequest(
+		http.MethodPost, fmt.Sprintf("%s/r/emokognition/detect", fnAPIURL),
+		nil)
+	if err != nil {
+		return err
+	}
+	if len(tweet.Entities.Media) >= 1 {
+		media := tweet.Entities.Media[0]
+		payload := &RequestPayload{
+			MediaURL: media.Media_url,
+		}
+		err := DoRequest(payload, detect, httpClient, fnToken)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func ProcessTweetWithLandmark(tweet anaconda.Tweet, httpClient *http.Client, fnAPIURL, fnToken string) error {
 	detect, err := http.NewRequest(
 		http.MethodPost, fmt.Sprintf("%s/r/where-is-it/detect-where", fnAPIURL),
 		nil)

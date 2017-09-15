@@ -48,3 +48,5 @@ ci-build-tweet-dispatcher:
 	${GOPATH}/bin/dep ensure; \
 	go build -race; \
 	rm -fr tweet-dispatcher
+
+all: dep-twitter-daemon dep-twitter-daemon-up build-twitter-daemon

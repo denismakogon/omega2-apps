@@ -8,14 +8,8 @@ import (
 	"os"
 )
 
-type RequestPayload struct {
-	TweetID  string `json:"tweet_id"`
-	User     string `json:"user"`
-	Landmark string `json:"landmark"`
-}
-
 func main() {
-	r := new(RequestPayload)
+	r := new(api.RequestPayload)
 	err := json.NewDecoder(os.Stdin).Decode(r)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "unable to decode STDIN, got error %v", err.Error())

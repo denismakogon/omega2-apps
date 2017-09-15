@@ -3,10 +3,10 @@ package api
 import (
 	"context"
 	"errors"
-	"github.com/funcy/functions_go/client"
-	"github.com/funcy/functions_go/client/apps"
-	"github.com/funcy/functions_go/client/routes"
-	"github.com/funcy/functions_go/models"
+	"github.com/fnproject/fn_go/client"
+	"github.com/fnproject/fn_go/client/apps"
+	"github.com/fnproject/fn_go/client/routes"
+	"github.com/fnproject/fn_go/models"
 	openapi "github.com/go-openapi/runtime/client"
 	"github.com/go-openapi/strfmt"
 	"os"
@@ -25,7 +25,7 @@ type ErrBody struct {
 	Error ErrMessage `json:"error"`
 }
 
-func recreateRoute(ctx context.Context, fnclient *client.Functions, appName, image, routePath, routeType, fformat string, timeout, idleTimeout int32) error {
+func recreateRoute(ctx context.Context, fnclient *client.Fn, appName, image, routePath, routeType, fformat string, timeout, idleTimeout int32, memory uint64) error {
 	cfg := &routes.PostAppsAppRoutesParams{
 		App: appName,
 		Body: &models.RouteWrapper{
@@ -34,7 +34,7 @@ func recreateRoute(ctx context.Context, fnclient *client.Functions, appName, ima
 				Path:        routePath,
 				Type:        routeType,
 				Timeout:     &timeout,
-				Memory:      uint64(126),
+				Memory:      memory,
 				Format:      fformat,
 				IDLETimeout: &idleTimeout,
 			},
@@ -48,26 +48,12 @@ func recreateRoute(ctx context.Context, fnclient *client.Functions, appName, ima
 	return nil
 }
 
-func setupAppAndRoutes(fnclient *client.Functions, gcloud *GCloudSecret, twitterSecret *TwitterSecret) error {
-	app := "where-is-it"
-	ctx, cancel := context.WithTimeout(context.Background(), 300*time.Second)
-	defer cancel()
-
-	config := map[string]string{}
-	config, err := Append(gcloud, config)
-	if err != nil {
-		return err
-	}
-	config, err = Append(twitterSecret, config)
-	if err != nil {
-		return err
-	}
-
-	_, err = fnclient.Apps.GetAppsApp(&apps.GetAppsAppParams{
+func redeployFnApp(ctx context.Context, fnclient *client.Fn, app string, config map[string]string) error {
+	_, err := fnclient.Apps.GetAppsApp(&apps.GetAppsAppParams{
 		App:     app,
 		Context: ctx,
 	})
-	// app exists
+
 	if err == nil {
 		appRoutes, err := fnclient.Routes.GetAppsAppRoutes(&routes.GetAppsAppRoutesParams{
 			App:     app,
@@ -102,34 +88,34 @@ func setupAppAndRoutes(fnclient *client.Functions, gcloud *GCloudSecret, twitter
 		},
 		Context: ctx,
 	})
+	return err
+}
+
+func setupEmokognitionAppAndRoutes(fnclient *client.Fn, twitterSecret *TwitterSecret, pgConfig *PostgresConfig) error {
+	app := "emokognition"
+	ctx, cancel := context.WithTimeout(context.Background(), 300*time.Second)
+	defer cancel()
+
+	config := map[string]string{}
+	config, err := Append(twitterSecret, config)
 	if err != nil {
-		return errors.New(err.Error())
+		return err
+	}
+	config, err = Append(pgConfig, config)
+	if err != nil {
+		return err
 	}
 
-	err = recreateRoute(ctx, fnclient, app,
-		"denismakogon/tweet-fail:0.0.2",
-		"/tweet-fail",
-		"async",
-		"default",
-		60, 120)
+	err = redeployFnApp(ctx, fnclient, app, config)
 	if err != nil {
-		return errors.New(err.Error())
+		return err
 	}
 	err = recreateRoute(ctx, fnclient, app,
-		"denismakogon/detect-task:0.0.5",
-		"/detect-where",
+		"denismakogon/emokognition:0.0.1",
+		"/detect",
 		"async",
 		"default",
-		60, 120)
-	if err != nil {
-		return errors.New(err.Error())
-	}
-	err = recreateRoute(ctx, fnclient, app,
-		"denismakogon/tweet-success:0.0.2",
-		"/tweet-success",
-		"async",
-		"default",
-		60, 120)
+		60, 120, uint64(1024))
 	if err != nil {
 		return errors.New(err.Error())
 	}
@@ -138,27 +124,99 @@ func setupAppAndRoutes(fnclient *client.Functions, gcloud *GCloudSecret, twitter
 		"/tweet-dispatch",
 		"sync",
 		"http",
-		60, 120)
+		60, 120, uint64(126))
 	if err != nil {
 		return errors.New(err.Error())
 	}
 	return nil
 }
 
-func SetupFunctions(gc *GCloudSecret, twitterSecret *TwitterSecret) (string, string, error) {
+func setupLandmarkAppAndRoutes(fnclient *client.Fn, gcloud *GCloudSecret, twitterSecret *TwitterSecret) error {
+	app := "where-is-it"
+	ctx, cancel := context.WithTimeout(context.Background(), 300*time.Second)
+	defer cancel()
+
+	config := map[string]string{}
+	config, err := Append(gcloud, config)
+	if err != nil {
+		return err
+	}
+	config, err = Append(twitterSecret, config)
+	if err != nil {
+		return err
+	}
+
+	err = redeployFnApp(ctx, fnclient, app, config)
+	if err != nil {
+		return err
+	}
+
+	err = recreateRoute(ctx, fnclient, app,
+		"denismakogon/tweet-fail:0.0.2",
+		"/tweet-fail",
+		"async",
+		"default",
+		60, 120, uint64(256))
+	if err != nil {
+		return errors.New(err.Error())
+	}
+	err = recreateRoute(ctx, fnclient, app,
+		"denismakogon/detect-task:0.0.5",
+		"/detect-where",
+		"async",
+		"default",
+		60, 120, uint64(256))
+	if err != nil {
+		return errors.New(err.Error())
+	}
+	err = recreateRoute(ctx, fnclient, app,
+		"denismakogon/tweet-success:0.0.2",
+		"/tweet-success",
+		"async",
+		"default",
+		60, 120, uint64(256))
+	if err != nil {
+		return errors.New(err.Error())
+	}
+	err = recreateRoute(ctx, fnclient, app,
+		"denismakogon/tweet-dispatcher:0.0.5",
+		"/tweet-dispatch",
+		"sync",
+		"http",
+		60, 120, uint64(256))
+	if err != nil {
+		return errors.New(err.Error())
+	}
+	return nil
+}
+
+func setupFNClient() (string, string, *client.Fn) {
 	fnAPIURL := os.Getenv("API_URL")
 	if fnAPIURL == "" {
 		fnAPIURL = "localhost:8080"
 	}
 	fnToken := os.Getenv("FN_TOKEN")
 	fnTransport := openapi.New(fnAPIURL, "/v1", []string{"http"})
-	// This means that FN token is not required if FN is local
 	if fnToken != "" && os.Getenv("API_URL") != "" {
 		fnTransport.DefaultAuthentication = openapi.BearerToken(fnToken)
 	}
 	// create the API client, with the transport
 	fnclient := client.New(fnTransport, strfmt.Default)
-	err := setupAppAndRoutes(fnclient, gc, twitterSecret)
+	return fnAPIURL, fnToken, fnclient
+}
+
+func SetupEmoKognitionFunctions(twitterSecret *TwitterSecret, pgConfig *PostgresConfig) (string, string, error) {
+	fnAPIURL, fnToken, fnclient := setupFNClient()
+	err := setupEmokognitionAppAndRoutes(fnclient, twitterSecret, pgConfig)
+	if err != nil {
+		return "", "", err
+	}
+	return fnAPIURL, fnToken, nil
+}
+
+func SetupLandmarkRecognitionFunctions(gc *GCloudSecret, twitterSecret *TwitterSecret) (string, string, error) {
+	fnAPIURL, fnToken, fnclient := setupFNClient()
+	err := setupLandmarkAppAndRoutes(fnclient, gc, twitterSecret)
 	if err != nil {
 		return "", "", err
 	}
