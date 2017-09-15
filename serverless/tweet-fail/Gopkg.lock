@@ -41,7 +41,7 @@
   branch = "master"
   name = "github.com/denismakogon/omega2-apps"
   packages = ["serverless/twitter-daemon/api"]
-  revision = "6077b12515566a949918a0916b167fe9f5a9a56e"
+  revision = "927827cab5abb317d690633e42142216e7506e4c"
 
 [[projects]]
   branch = "master"
@@ -56,10 +56,10 @@
   revision = "2e71ec9dd5adce3b168cd0dbde03b5cc04951c30"
 
 [[projects]]
-  name = "github.com/funcy/functions_go"
+  name = "github.com/fnproject/fn_go"
   packages = ["client","client/apps","client/call","client/operations","client/routes","models"]
-  revision = "e046aa4ca1f1028a04fc51395297ff07515cb0b6"
-  version = "0.1.37"
+  revision = "418dcd8e37593d86604e89a48d7ee2e109a1d3bf"
+  version = "0.2.0"
 
 [[projects]]
   branch = "master"
@@ -107,7 +107,7 @@
   branch = "master"
   name = "github.com/go-openapi/spec"
   packages = ["."]
-  revision = "3faa0055dbbf2110abc1f3b4e3adbb22721e96e7"
+  revision = "7abd5745472fff5eb3685386d5fb8bf38683154d"
 
 [[projects]]
   branch = "master"
@@ -125,7 +125,7 @@
   branch = "master"
   name = "github.com/go-openapi/validate"
   packages = ["."]
-  revision = "8a82927c942c94794a5cd8b8b50ce2f48a955c0c"
+  revision = "901ab082554d18fd6a99cc3a4bde6469e58d4cf6"
 
 [[projects]]
   branch = "master"
@@ -143,13 +143,13 @@
   branch = "master"
   name = "golang.org/x/net"
   packages = ["context","context/ctxhttp","idna"]
-  revision = "66aacef3dd8a676686c7ae3716979581e8b03c47"
+  revision = "859d1a86bb617c0c20d154590c3c5d3fcb670b07"
 
 [[projects]]
   branch = "master"
   name = "golang.org/x/text"
-  packages = ["internal/gen","internal/triegen","internal/ucd","secure/bidirule","transform","unicode/bidi","unicode/cldr","unicode/norm","unicode/rangetable","width"]
-  revision = "bd91bbf73e9a4a801adbfb97133c992678533126"
+  packages = ["collate","collate/build","internal/colltab","internal/gen","internal/tag","internal/triegen","internal/ucd","language","secure/bidirule","transform","unicode/bidi","unicode/cldr","unicode/norm","unicode/rangetable","width"]
+  revision = "1cbadb444a806fd9430d14ad08967ed91da4fa0a"
 
 [[projects]]
   branch = "v2"

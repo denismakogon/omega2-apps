@@ -16,3 +16,4 @@ checkpoint
 emotion_recognition-*
 data/*
 .idea
+emotion-recorder
