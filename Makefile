@@ -20,7 +20,7 @@ build-twitter-daemon-mipsle:
 	rm -fr twitter-daemon
 
 build-emotion-recorder:
-	cd serverless/emotion-recorder; \
+	cd serverless/emotion-results; \
 	go build -race; \
 	rm -fr emotion-recorder
 

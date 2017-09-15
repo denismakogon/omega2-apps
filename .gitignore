@@ -14,4 +14,4 @@ checkpoint
 emotion_recognition-*
 data/*
 .idea
-
+.venv

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Audience mood results</title>
+</head>
+<body>
+<table>
+    <caption>Satisfaction statistics(main)</caption>
+    <TR>
+        <TH>Emotion</TH>
+        <TH>Stat</TH>
+    </TR>
+    {% for item in items %}
+    <TR>
+        <TD>{{item.emotion}}</TD>
+        <TD>{{item.stat}}</TD>
+    </TR>
+    {% endfor %}
+</table>
+<table>
+    <caption>Satisfaction statistics(alternative)</caption>
+    <TR>
+        <TH>Emotion</TH>
+        <TH>Stat</TH>
+    </TR>
+    {% for item in alt_items %}
+    <TR>
+        <TD>{{alt_item.emotion}}</TD>
+        <TD>{{alt_item.stat}}</TD>
+    </TR>
+    {% endfor %}
+</table>
+</body>
+</html>

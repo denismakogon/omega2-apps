@@ -111,20 +111,38 @@ func setupEmokognitionAppAndRoutes(fnclient *client.Fn, twitterSecret *TwitterSe
 		return err
 	}
 	err = recreateRoute(ctx, fnclient, app,
-		"denismakogon/emokognition:0.0.1",
-		"/detect",
-		"async",
-		"default",
-		60, 120, uint64(1024))
-	if err != nil {
-		return errors.New(err.Error())
-	}
-	err = recreateRoute(ctx, fnclient, app,
 		"denismakogon/tweet-dispatcher:0.0.5",
 		"/tweet-dispatch",
 		"sync",
 		"http",
 		60, 120, uint64(126))
+	if err != nil {
+		return errors.New(err.Error())
+	}
+	err = recreateRoute(ctx, fnclient, app,
+		"denismakogon/emotion-recorder:0.0.1",
+		"/recorder",
+		"async",
+		"http",
+		60, 120, uint64(256))
+	if err != nil {
+		return errors.New(err.Error())
+	}
+	err = recreateRoute(ctx, fnclient, app,
+		"denismakogon/emotion-results:0.0.1",
+		"/results",
+		"sync",
+		"default",
+		60, 120, uint64(126))
+	if err != nil {
+		return errors.New(err.Error())
+	}
+	err = recreateRoute(ctx, fnclient, app,
+		"denismakogon/emokognition:0.0.1",
+		"/detect",
+		"async",
+		"default",
+		60, 120, uint64(1024))
 	if err != nil {
 		return errors.New(err.Error())
 	}

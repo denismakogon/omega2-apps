@@ -17,7 +17,6 @@ func init() {
 	rand.Seed(time.Now().UnixNano())
 }
 
-// TODO: pg config from env
 type RqInput struct {
 	Pg_host     string `json:"pg_host"`
 	Pg_port     string `json:"pg_port"`

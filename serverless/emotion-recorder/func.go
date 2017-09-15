@@ -13,7 +13,7 @@ import (
 	"strconv"
 )
 
-var voteTable = `CREATE TABLE IF NOT EXISTS emotions (id int NOT NULL AUTO_INCREMENT, main_emotion VARCHAR(255) NOT NULL, alt_emotion VARCHAR(255) NOT NULL)`
+var emotionsTable = `CREATE TABLE IF NOT EXISTS emotions (id int NOT NULL AUTO_INCREMENT, main_emotion VARCHAR(255) NOT NULL, alt_emotion VARCHAR(255) NOT NULL)`
 
 func writeBadResponse(buf *bytes.Buffer, resp *http.Response, errMsg string) {
 	resp.StatusCode = 500
@@ -46,6 +46,13 @@ func main() {
 		return
 	} else {
 		for {
+			res := http.Response{
+				Proto:      "HTTP/1.1",
+				ProtoMajor: 1,
+				ProtoMinor: 1,
+				StatusCode: 200,
+				Status:     "OK",
+			}
 			r := bufio.NewReader(os.Stdin)
 			req, err := http.ReadRequest(r)
 			var buf bytes.Buffer
@@ -71,7 +78,7 @@ func main() {
 							writeBadResponse(&buf, &res,
 								fmt.Sprintf("Unable to talk to PG, error: %s", err.Error()))
 						} else {
-							_, err = db.Exec(voteTable)
+							_, err = db.Exec(emotionsTable)
 							if err != nil {
 								writeBadResponse(&buf, &res, fmt.Sprintf("Unable to create table, error: %s", err.Error()))
 							} else {
@@ -81,14 +88,10 @@ func main() {
 									writeBadResponse(&buf, &res, err.Error())
 								} else {
 									fmt.Fprint(&buf, "OK\n")
-
 								}
 							}
-
 						}
-
 					}
-
 				}
 			}
 			res.Body = ioutil.NopCloser(&buf)

@@ -24,10 +24,10 @@ type RequestPayload struct {
 	User            string `json:"user,omitempty"`
 	TweetFail       string `json:"tweet_fail,omitempty"`
 	TweetSuccess    string `json:"tweet_success,omitempty"`
-	RecognitionType string `json:"recognition_type"`
-	MainEmotion     string `json:"main_emotion"`
-	AltEmotion      string `json:"alt_emotion"`
-	Landmark        string `json:"landmark"`
+	RecognitionType string `json:"recognition_type,omitempty"`
+	MainEmotion     string `json:"main_emotion,omitempty"`
+	AltEmotion      string `json:"alt_emotion,omitempty"`
+	Landmark        string `json:"landmark,omitempty"`
 }
 
 type OnionOmega2 struct {
