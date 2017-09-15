@@ -12,12 +12,17 @@ dep-twitter-daemon-up:
 build-twitter-daemon:
 	cd serverless/twitter-daemon; \
 	go build -race; \
-	rm -fr twitter_daemon
+	rm -fr twitter-daemon
 
 build-twitter-daemon-mipsle:
 	cd serverless/twitter-daemon; \
 	GOOS=linux GOARCH=mipsle go build -ldflags "-s -w" -compiler gc; \
-	rm -fr twitter_daemon
+	rm -fr twitter-daemon
+
+build-emotion-recorder:
+	cd serverless/emotion-recorder; \
+	go build -race; \
+	rm -fr emotion-recorder
 
 ci-build-twitter-daemon:
 	cd serverless/twitter-daemon; \
