@@ -14,7 +14,7 @@ import (
 	"strconv"
 )
 
-var emotionsTable = `CREATE TABLE IF NOT EXISTS emotions (id int NOT NULL AUTO_INCREMENT, main_emotion VARCHAR(255) NOT NULL, alt_emotion VARCHAR(255) NOT NULL)`
+var emotionsTable = `CREATE TABLE IF NOT EXISTS emotions (id serial NOT NULL, main_emotion VARCHAR(255) NOT NULL, alt_emotion VARCHAR(255) NOT NULL)`
 
 func writeBadResponse(buf *bytes.Buffer, resp *http.Response, errMsg string) {
 	resp.StatusCode = 500
