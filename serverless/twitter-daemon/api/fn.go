@@ -93,7 +93,7 @@ func redeployFnApp(ctx context.Context, fnclient *client.Fn, app string, config 
 }
 
 func setupEmokognitionAppAndRoutes(fnAPIURL string, fnclient *client.Fn, twitterSecret *TwitterSecret, pgConfig *PostgresConfig) error {
-	app := "emokognition"
+	app := "landmark"
 	ctx, cancel := context.WithTimeout(context.Background(), 300*time.Second)
 	defer cancel()
 

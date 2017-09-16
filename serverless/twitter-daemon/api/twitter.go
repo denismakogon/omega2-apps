@@ -86,13 +86,13 @@ func ProcessTweetWithEmotion(tweet anaconda.Tweet, httpClient *http.Client, fnAP
 
 func ProcessTweetWithLandmark(tweet anaconda.Tweet, httpClient *http.Client, fnAPIURL, fnToken string) error {
 	detect, err := http.NewRequest(
-		http.MethodPost, fmt.Sprintf("%s/r/where-is-it/detect-where", fnAPIURL),
+		http.MethodPost, fmt.Sprintf("%s/r/landmark/detect-where", fnAPIURL),
 		nil)
 	if err != nil {
 		return err
 	}
 
-	fail, err := http.NewRequest(http.MethodPost, fmt.Sprintf("%s/r/where-is-it/tweet-fail", fnAPIURL), nil)
+	fail, err := http.NewRequest(http.MethodPost, fmt.Sprintf("%s/r/landmark/tweet-fail", fnAPIURL), nil)
 	if err != nil {
 		return err
 	}
@@ -114,8 +114,8 @@ func ProcessTweetWithLandmark(tweet anaconda.Tweet, httpClient *http.Client, fnA
 				MediaURL:     media.Media_url,
 				User:         user,
 				TweetID:      tweet.IdStr,
-				TweetFail:    fmt.Sprintf("%s/r/where-is-it/tweet-fail", fnAPIURL),
-				TweetSuccess: fmt.Sprintf("%s/r/where-is-it/tweet-success", fnAPIURL),
+				TweetFail:    fmt.Sprintf("%s/r/landmark/tweet-fail", fnAPIURL),
+				TweetSuccess: fmt.Sprintf("%s/r/landmark/tweet-success", fnAPIURL),
 			}
 			err := DoRequest(payload, detect, httpClient, fnToken)
 			if err != nil {

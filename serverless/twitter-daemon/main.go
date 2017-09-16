@@ -39,7 +39,7 @@ func asyncRunner(omega *api.OnionOmega2, recognitionType, fnAPIURL, fnToken stri
 				go func() {
 					defer wg.Done()
 					hotTweetDispatch, err := http.NewRequest(
-						http.MethodPost, fmt.Sprintf("%s/r/where-is-it/tweet-dispatch", withSchemaAPI),
+						http.MethodPost, fmt.Sprintf("%s/r/%s/tweet-dispatch", withSchemaAPI, recognitionType),
 						nil)
 					if err != nil {
 						panic(err.Error())
