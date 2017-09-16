@@ -7,6 +7,11 @@ import sys
 
 import aiopg
 
+CREATE = ("CREATE TABLE IF NOT EXISTS emotions ("
+          "id SERIAL, "
+          "main_emotion VARCHAR(255) NOT NULL, "
+          "alt_emotion VARCHAR(255) NOT NULL)")
+
 MAIN_SELECT = {
     "q": "SELECT main_emotion, COUNT(id) AS count FROM emotions GROUP BY main_emotion",
     "name": "main"
@@ -23,6 +28,7 @@ async def select_votes(pg_dns):
     async with aiopg.create_pool(pg_dns) as pool:
         async with pool.acquire() as conn:
             async with conn.cursor() as cur:
+                await cur.execute(CREATE)
                 for o in [MAIN_SELECT, ALT_SELECT]:
                     await cur.execute(o["q"])
                     result = collections.defaultdict(int)

@@ -13,3 +13,6 @@ Here's my first article how to build/compile code for Omega 2 architecture [MIPS
 
  - [Golang cross-compiling for MIPS32](cross-compiling/README.md)
 
+ - [Emotion recognition app for MIPS32](serverless/emokognition.md)
+
+ - [Landmark recognition app for MIPS32](serverless/landmark_recognition.md)

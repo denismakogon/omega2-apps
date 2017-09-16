@@ -23,9 +23,6 @@ func writeBadResponse(buf *bytes.Buffer, resp *http.Response, errMsg string) {
 }
 
 func main() {
-	pgConf := new(api.PostgresConfig)
-	pgConf.FromEnv()
-
 	res := http.Response{
 		Proto:      "HTTP/1.1",
 		ProtoMajor: 1,
@@ -33,18 +30,29 @@ func main() {
 		StatusCode: 200,
 		Status:     "OK",
 	}
-
 	var buf bytes.Buffer
-	db, err := sqlx.Connect("postgres", pgConf.DNS())
-	defer db.Close()
+	pgConf := new(api.PostgresConfig)
+	err := pgConf.FromEnv()
 	if err != nil {
 		writeBadResponse(&buf, &res,
-			fmt.Sprintf("Unable to talk to PG, error: %s", err.Error()))
+			fmt.Sprintf("Unable to setup PG struct from env. Error: %s", err.Error()))
+		res.Body = ioutil.NopCloser(&buf)
+		res.ContentLength = int64(buf.Len())
+		res.Write(os.Stdout)
+		return
+	}
+
+	pg_dns := pgConf.DNS()
+	db, err := sqlx.Connect("postgres", pg_dns)
+	if err != nil {
+		writeBadResponse(&buf, &res,
+			fmt.Sprintf("Unable to talk to PG by DNS %s, error: %s", pg_dns, err.Error()))
 		res.Body = ioutil.NopCloser(&buf)
 		res.ContentLength = int64(buf.Len())
 		res.Write(os.Stdout)
 		return
 	} else {
+		defer db.Close()
 		for {
 			res := http.Response{
 				Proto:      "HTTP/1.1",

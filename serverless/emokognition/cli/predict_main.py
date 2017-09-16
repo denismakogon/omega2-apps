@@ -42,7 +42,8 @@ if __name__ == "__main__":
     sys.stderr.write(json.dumps(dict(s)))
     main_emotion, _ = s[0]
     alt_emotion, _ = s[1]
-    recorder = "{}/r/emokognition/recorder".format(data.get("api_url"))
+
+    recorder = "{}/r/emokognition/recorder".format(os.environ.get("FN_API_URL"))
     try:
         requests.post(recorder, json={
             "alt_emotion": alt_emotion,

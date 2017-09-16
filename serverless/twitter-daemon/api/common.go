@@ -66,7 +66,7 @@ func StructFromEnv(i interface{}) error {
 	for i := 0; i < v.NumField(); i++ {
 		fi := typ.Field(i)
 		if tagValue := fi.Tag.Get("json"); tagValue != "" {
-			value := os.Getenv(strings.ToUpper(tagValue))
+			value := os.Getenv(tagValue)
 			if value == "" {
 				return fmt.Errorf("Missing env var: %v", strings.ToUpper(tagValue))
 			}

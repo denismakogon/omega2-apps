@@ -3,6 +3,7 @@ package api
 import (
 	"context"
 	"errors"
+	"fmt"
 	"github.com/fnproject/fn_go/client"
 	"github.com/fnproject/fn_go/client/apps"
 	"github.com/fnproject/fn_go/client/routes"
@@ -91,7 +92,7 @@ func redeployFnApp(ctx context.Context, fnclient *client.Fn, app string, config 
 	return err
 }
 
-func setupEmokognitionAppAndRoutes(fnclient *client.Fn, twitterSecret *TwitterSecret, pgConfig *PostgresConfig) error {
+func setupEmokognitionAppAndRoutes(fnAPIURL string, fnclient *client.Fn, twitterSecret *TwitterSecret, pgConfig *PostgresConfig) error {
 	app := "emokognition"
 	ctx, cancel := context.WithTimeout(context.Background(), 300*time.Second)
 	defer cancel()
@@ -105,6 +106,7 @@ func setupEmokognitionAppAndRoutes(fnclient *client.Fn, twitterSecret *TwitterSe
 	if err != nil {
 		return err
 	}
+	config["FN_API_URL"] = fmt.Sprintf("http://%v", fnAPIURL)
 
 	err = redeployFnApp(ctx, fnclient, app, config)
 	if err != nil {
@@ -120,7 +122,7 @@ func setupEmokognitionAppAndRoutes(fnclient *client.Fn, twitterSecret *TwitterSe
 		return errors.New(err.Error())
 	}
 	err = recreateRoute(ctx, fnclient, app,
-		"denismakogon/emotion-recorder:0.0.1",
+		"denismakogon/emotion-recorder:0.0.2",
 		"/recorder",
 		"async",
 		"http",
@@ -129,7 +131,7 @@ func setupEmokognitionAppAndRoutes(fnclient *client.Fn, twitterSecret *TwitterSe
 		return errors.New(err.Error())
 	}
 	err = recreateRoute(ctx, fnclient, app,
-		"denismakogon/emotion-results:0.0.1",
+		"denismakogon/emotion-results:0.0.3",
 		"/results",
 		"sync",
 		"default",
@@ -138,7 +140,7 @@ func setupEmokognitionAppAndRoutes(fnclient *client.Fn, twitterSecret *TwitterSe
 		return errors.New(err.Error())
 	}
 	err = recreateRoute(ctx, fnclient, app,
-		"denismakogon/emokognition:0.0.1",
+		"denismakogon/emokognition:0.0.3",
 		"/detect",
 		"async",
 		"default",
@@ -146,6 +148,16 @@ func setupEmokognitionAppAndRoutes(fnclient *client.Fn, twitterSecret *TwitterSe
 	if err != nil {
 		return errors.New(err.Error())
 	}
+	err = recreateRoute(ctx, fnclient, app,
+		"denismakogon/emokognition-view:0.0.4",
+		"/index.html",
+		"sync",
+		"default",
+		60, 120, uint64(256))
+	if err != nil {
+		return errors.New(err.Error())
+	}
+
 	return nil
 }
 
@@ -225,7 +237,7 @@ func setupFNClient() (string, string, *client.Fn) {
 
 func SetupEmoKognitionFunctions(twitterSecret *TwitterSecret, pgConfig *PostgresConfig) (string, string, error) {
 	fnAPIURL, fnToken, fnclient := setupFNClient()
-	err := setupEmokognitionAppAndRoutes(fnclient, twitterSecret, pgConfig)
+	err := setupEmokognitionAppAndRoutes(fnAPIURL, fnclient, twitterSecret, pgConfig)
 	if err != nil {
 		return "", "", err
 	}
