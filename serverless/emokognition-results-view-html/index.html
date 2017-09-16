@@ -143,16 +143,19 @@
     <div id="content-container">
       <div id="content-container-center">
         <h2>Audience mood</h2>
+          <h3>Reactions: {{total}}</h3>
         <table cellspacing="2" border="1" cellpadding="5" width="600">
             <caption><h3>Main satisfaction statistics</h3></caption>
             <TR>
                 <TH>Emotion</TH>
                 <TH>Probability</TH>
+                <TH>Appeared times</TH>
             </TR>
             {% for item in main_emotions %}
             <TR>
                 <TD>{{item.emotion}}</TD>
                 <TD>{{item.stat}}</TD>
+                <TD>{{item.times}}</TD>
             </TR>
             {% endfor %}
         </table>
@@ -161,14 +164,20 @@
             <TR>
                 <TH>Emotion</TH>
                 <TH>Probability</TH>
+                <TH>Appeared times</TH>
             </TR>
             {% for item in alt_emotions %}
             <TR>
                 <TD>{{item.emotion}}</TD>
                 <TD>{{item.stat}}</TD>
+                <TD>{{item.times}}</TD>
             </TR>
             {% endfor %}
         </table>
+          <br/>
+        <form id="back" name='form' method="POST" action="">
+          <button id="a" type="submit" name="back" class="a" value="Go back to voting"><h4>Refresh</h4></button>
+        </form>
       </div>
     </div>
     <script src="http://code.jquery.com/jquery-latest.min.js" type="text/javascript"></script>

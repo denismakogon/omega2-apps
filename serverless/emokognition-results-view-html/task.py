@@ -19,12 +19,13 @@ if __name__ == "__main__":
         main, alt = [], []
         total = sum(list(main_emotions.values()))
         for emotion, count in main_emotions.items():
-            main.append(dict(emotion=emotion, stat=float(count / total) * 100))
+            main.append(dict(emotion=emotion, stat=float(count / total) * 100, times=count))
         for emotion, count in alt_emotions.items():
-            alt.append(dict(emotion=emotion, stat=float(count / total) * 100))
+            alt.append(dict(emotion=emotion, stat=float(count / total) * 100, times=count))
         context = {
             "main_emotions": main,
             "alt_emotions": alt,
+            "total": total
         }
         print(template.render(context))
     except Exception as ex:
