@@ -135,6 +135,12 @@
 
 [[projects]]
   branch = "master"
+  name = "github.com/lib/pq"
+  packages = [".","oid"]
+  revision = "e42267488fe361b9dc034be7a6bffef5b195bceb"
+
+[[projects]]
+  branch = "master"
   name = "github.com/mailru/easyjson"
   packages = ["buffer","jlexer","jwriter"]
   revision = "2a92e673c9a6302dd05c3a691ae1f24aef46457d"
@@ -172,6 +178,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "242370edacfd4591a6cc13e30ff67b4cb3e67eedc0d8baa0835dffe176eb7612"
+  inputs-digest = "68d07254d32714e2549cbe3be65215ff79da93daebd86176344eb843f802cae6"
   solver-name = "gps-cdcl"
   solver-version = 1

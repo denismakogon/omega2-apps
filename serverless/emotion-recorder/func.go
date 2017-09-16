@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"github.com/denismakogon/omega2-apps/serverless/twitter-daemon/api"
 	"github.com/jmoiron/sqlx"
+	_ "github.com/lib/pq"
 	"io/ioutil"
 	"net/http"
 	"os"
@@ -41,9 +42,8 @@ func main() {
 		res.Write(os.Stdout)
 		return
 	}
-
 	pg_dns := pgConf.DNS()
-	db, err := sqlx.Connect("postgres", pg_dns)
+	db, err := sqlx.Open("postgres", pg_dns)
 	if err != nil {
 		writeBadResponse(&buf, &res,
 			fmt.Sprintf("Unable to talk to PG by DNS %s, error: %s", pg_dns, err.Error()))
@@ -69,33 +69,44 @@ func main() {
 					fmt.Sprintf("Unable to read request from STDIN, "+
 						"it might be empty. Error: %v", err.Error()))
 			} else {
-				l, _ := strconv.Atoi(req.Header.Get("Content-Length"))
-				p := make([]byte, l)
-				_, err = r.Read(p)
+				l, err := strconv.Atoi(req.Header.Get("Content-Length"))
 				if err != nil {
 					writeBadResponse(&buf, &res,
-						fmt.Sprintf("Unable to read request data, error: %s", err.Error()))
+						fmt.Sprintf("Failed to convert content length to int: %s", err.Error()))
 				} else {
-					payload := &api.RequestPayload{}
-					err = json.Unmarshal(p, payload)
+					fmt.Fprintf(os.Stderr, "Income content len: %v\n", l)
+					p := make([]byte, l)
+					_, err = r.Read(p)
 					if err != nil {
 						writeBadResponse(&buf, &res,
-							fmt.Sprintf("Unable to decode input object, error: %s", err.Error()))
+							fmt.Sprintf("Unable to read request data, error: %s", err.Error()))
 					} else {
+						payload := &api.RequestPayload{}
+						err = json.Unmarshal(p, payload)
 						if err != nil {
-							writeBadResponse(&buf, &res,
-								fmt.Sprintf("Unable to talk to PG, error: %s", err.Error()))
-						} else {
-							_, err = db.Exec(emotionsTable)
-							if err != nil {
-								writeBadResponse(&buf, &res, fmt.Sprintf("Unable to create table, error: %s", err.Error()))
+							if e, ok := err.(*json.SyntaxError); ok {
+								writeBadResponse(&buf, &res,
+									fmt.Sprintf("syntax error at byte offset %d", e.Offset))
 							} else {
-								q := db.Rebind("INSERT INTO emotions (main_emotion, alt_emotion) VALUES (?, ?);")
-								_, err = db.Exec(q, payload.MainEmotion, payload.AltEmotion)
+								writeBadResponse(&buf, &res,
+									fmt.Sprintf("Unable to decode input object, error: %s", err.Error()))
+							}
+						} else {
+							if err != nil {
+								writeBadResponse(&buf, &res,
+									fmt.Sprintf("Unable to talk to PG, error: %s", err.Error()))
+							} else {
+								_, err = db.Exec(emotionsTable)
 								if err != nil {
-									writeBadResponse(&buf, &res, err.Error())
+									writeBadResponse(&buf, &res, fmt.Sprintf("Unable to create table, error: %s", err.Error()))
 								} else {
-									fmt.Fprint(&buf, "OK\n")
+									q := db.Rebind("INSERT INTO emotions (main_emotion, alt_emotion) VALUES (?, ?);")
+									_, err = db.Exec(q, payload.MainEmotion, payload.AltEmotion)
+									if err != nil {
+										writeBadResponse(&buf, &res, err.Error())
+									} else {
+										fmt.Fprint(&buf, "OK\n")
+									}
 								}
 							}
 						}

@@ -21,7 +21,7 @@ func (pgsql *PostgresConfig) FromEnv() error {
 
 func (pgsql *PostgresConfig) DNS() string {
 	return fmt.Sprintf(
-		"dbname=%s user=%s password=%s port=%s host=%s",
+		"dbname=%s user=%s password=%s port=%s host=%s sslmode=disable",
 		pgsql.DB, pgsql.User,
 		pgsql.Password, pgsql.Port, pgsql.Host)
 }

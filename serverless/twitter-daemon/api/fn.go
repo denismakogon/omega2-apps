@@ -122,9 +122,9 @@ func setupEmokognitionAppAndRoutes(fnAPIURL string, fnclient *client.Fn, twitter
 		return errors.New(err.Error())
 	}
 	err = recreateRoute(ctx, fnclient, app,
-		"denismakogon/emotion-recorder:0.0.2",
+		"denismakogon/emotion-recorder:0.0.8",
 		"/recorder",
-		"async",
+		"sync",
 		"http",
 		60, 120, uint64(256))
 	if err != nil {
