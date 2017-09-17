@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/ChimeraCoder/anaconda"
 	"github.com/denismakogon/omega2-apps/serverless/twitter-daemon/api"
 	"net/http"
 	"net/url"
@@ -10,7 +11,7 @@ import (
 	"time"
 )
 
-func asyncRunner(omega *api.OnionOmega2, recognitionType, fnAPIURL, fnToken string) {
+func asyncRunner(omega *api.OnionOmega2, recognitionType, fnAPIURL, fnToken string, proc func(tweet anaconda.Tweet, httpClient *http.Client, fnAPIURL, fnToken string) error) {
 	httpClient := api.SetupHTTPClient()
 
 	tweetID := os.Getenv("InitialTweetID")
@@ -20,7 +21,6 @@ func asyncRunner(omega *api.OnionOmega2, recognitionType, fnAPIURL, fnToken stri
 	}
 	omega.SetTweetIDToStartFrom(tweetID)
 	wg := new(sync.WaitGroup)
-	withSchemaAPI := fmt.Sprintf("http://%v", fnAPIURL)
 	for {
 		ok, err := omega.TwitterAPI.VerifyCredentials()
 		if !ok {
@@ -38,18 +38,7 @@ func asyncRunner(omega *api.OnionOmega2, recognitionType, fnAPIURL, fnToken stri
 				omega.PrintTweetInfo(tweet)
 				go func() {
 					defer wg.Done()
-					hotTweetDispatch, err := http.NewRequest(
-						http.MethodPost, fmt.Sprintf("%s/r/%s/tweet-dispatch", withSchemaAPI, recognitionType),
-						nil)
-					if err != nil {
-						panic(err.Error())
-					}
-					payload := &api.RequestPayload{
-						TweetIDInt64:    tweet.Id,
-						APIURL:          withSchemaAPI,
-						RecognitionType: recognitionType,
-					}
-					_, err = api.DoUncheckedRequest(payload, hotTweetDispatch, httpClient, fnToken)
+					err = proc(tweet, httpClient, fnAPIURL, fnToken)
 					if err != nil {
 						panic(err.Error())
 					}
@@ -82,7 +71,7 @@ func EmotionRecognition() {
 		TwitterAPI:   twitterAPI,
 		SearchValues: &v,
 	}
-	asyncRunner(&omega, "emokognition", fnAPIURL, fnToken)
+	asyncRunner(&omega, "emokognition", fnAPIURL, fnToken, api.ProcessTweetWithEmotion)
 }
 
 func LandmarkRecognition() {
@@ -113,7 +102,7 @@ func LandmarkRecognition() {
 		SearchValues: &v,
 		GCloudAuth:   gc,
 	}
-	asyncRunner(&omega, "landmark", fnAPIURL, fnToken)
+	asyncRunner(&omega, "landmark", fnAPIURL, fnToken, api.ProcessTweetWithLandmark)
 }
 
 func main() {

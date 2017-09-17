@@ -48,10 +48,4 @@ ci-build-tweet-success:
 	go build -race; \
 	rm -fr tweet-success
 
-ci-build-tweet-dispatcher:
-	cd serverless/tweet-dispatcher; \
-	${GOPATH}/bin/dep ensure; \
-	go build -race; \
-	rm -fr tweet-dispatcher
-
 all: dep-twitter-daemon dep-twitter-daemon-up build-twitter-daemon

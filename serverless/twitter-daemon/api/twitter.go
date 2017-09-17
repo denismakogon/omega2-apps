@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/ChimeraCoder/anaconda"
 	"net/http"
-	"os"
 	"strconv"
 )
 
@@ -66,18 +65,13 @@ func (omega *OnionOmega2) GetRecentMentions() (tweets []anaconda.Tweet, err erro
 }
 
 func ProcessTweetWithEmotion(tweet anaconda.Tweet, httpClient *http.Client, fnAPIURL, fnToken string) error {
-	fmt.Fprintln(os.Stderr, "entering ProcessTweetWithEmotion")
 	detect, err := http.NewRequest(
 		http.MethodPost, fmt.Sprintf("%s/r/emokognition/detect", fnAPIURL),
 		nil)
 	if err != nil {
 		return err
 	}
-	fmt.Fprintln(os.Stderr, "ProcessTweetWithEmotion: request created")
-	fmt.Fprintf(os.Stderr, "ProcessTweetWithEmotion: media found: %d\n",
-		len(tweet.Entities.Media))
-	if len(tweet.Entities.Media) != 0 {
-		media := tweet.Entities.Media[0]
+	for _, media := range tweet.Entities.Media {
 		payload := &RequestPayload{
 			MediaURL: media.Media_url,
 		}
@@ -102,8 +96,7 @@ func ProcessTweetWithLandmark(tweet anaconda.Tweet, httpClient *http.Client, fnA
 		return err
 	}
 
-	if len(tweet.Entities.Media) != 0 {
-		media := tweet.Entities.Media[0]
+	for _, media := range tweet.Entities.Media {
 		user := fmt.Sprintf("@%v", tweet.User.ScreenName)
 		if media.Type != "photo" {
 			payload := &RequestPayload{
@@ -132,6 +125,11 @@ func ProcessTweetWithLandmark(tweet anaconda.Tweet, httpClient *http.Client, fnA
 }
 
 func (omega *OnionOmega2) PrintTweetInfo(tweet anaconda.Tweet) {
+	hasMedia := false
+	if len(tweet.Entities.Media) != 0 {
+		hasMedia = true
+	}
 	fmt.Println(fmt.Sprintf(
-		"[%v] found new tweet: %v from @%v.\n", tweet.CreatedAt, tweet.Text, tweet.User.ScreenName))
+		"[%v] found new tweet: %v from @%v. Media included? -%s\n",
+		tweet.CreatedAt, tweet.Text, tweet.User.ScreenName, hasMedia))
 }

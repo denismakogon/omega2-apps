@@ -113,15 +113,6 @@ func setupEmokognitionAppAndRoutes(fnAPIURL string, fnclient *client.Fn, twitter
 		return err
 	}
 	err = recreateRoute(ctx, fnclient, app,
-		"denismakogon/tweet-dispatcher:0.0.6",
-		"/tweet-dispatch",
-		"sync",
-		"http",
-		60, 120, uint64(256))
-	if err != nil {
-		return errors.New(err.Error())
-	}
-	err = recreateRoute(ctx, fnclient, app,
 		"denismakogon/emotion-recorder:0.0.10",
 		"/recorder",
 		"sync",
@@ -204,15 +195,6 @@ func setupLandmarkAppAndRoutes(fnclient *client.Fn, gcloud *GCloudSecret, twitte
 		"/tweet-success",
 		"async",
 		"default",
-		60, 120, uint64(256))
-	if err != nil {
-		return errors.New(err.Error())
-	}
-	err = recreateRoute(ctx, fnclient, app,
-		"denismakogon/tweet-dispatcher:0.0.6",
-		"/tweet-dispatch",
-		"sync",
-		"http",
 		60, 120, uint64(256))
 	if err != nil {
 		return errors.New(err.Error())

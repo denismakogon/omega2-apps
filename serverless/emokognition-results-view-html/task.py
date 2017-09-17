@@ -9,7 +9,8 @@ if __name__ == "__main__":
     env = jinja2.Environment(loader=loader)
     template = env.get_template('')
 
-    recorder = "{0}/r/emokognition/results".format(os.environ.get("FN_API_URL"))
+    fn_app = os.environ.get("FN_APP_NAME")
+    recorder = "{0}/r/{1}/results".format(os.environ.get("FN_API_URL"), fn_app)
     try:
         resp = requests.get(recorder)
         resp.raise_for_status()
