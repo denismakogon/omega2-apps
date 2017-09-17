@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/ChimeraCoder/anaconda"
 	"net/http"
+	"os"
 	"strconv"
 )
 
@@ -65,12 +66,16 @@ func (omega *OnionOmega2) GetRecentMentions() (tweets []anaconda.Tweet, err erro
 }
 
 func ProcessTweetWithEmotion(tweet anaconda.Tweet, httpClient *http.Client, fnAPIURL, fnToken string) error {
+	fmt.Fprintln(os.Stderr, "entering ProcessTweetWithEmotion")
 	detect, err := http.NewRequest(
 		http.MethodPost, fmt.Sprintf("%s/r/emokognition/detect", fnAPIURL),
 		nil)
 	if err != nil {
 		return err
 	}
+	fmt.Fprintln(os.Stderr, "ProcessTweetWithEmotion: request created")
+	fmt.Fprintf(os.Stderr, "ProcessTweetWithEmotion: media found: %s\n",
+		len(tweet.Entities.Media))
 	if len(tweet.Entities.Media) != 0 {
 		media := tweet.Entities.Media[0]
 		payload := &RequestPayload{

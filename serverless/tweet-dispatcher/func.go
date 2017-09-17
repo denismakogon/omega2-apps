@@ -86,7 +86,7 @@ func main() {
 										fmt.Sprintf("Unable to submit tweet processing. "+
 											"Error: %v", err.Error()))
 								} else {
-									fmt.Fprint(&buf, "OK\n")
+									fmt.Fprint(&buf, "OK landmark\n")
 								}
 							}
 							fmt.Fprintf(os.Stderr, "Recognition type: %s\n", payload.RecognitionType)
