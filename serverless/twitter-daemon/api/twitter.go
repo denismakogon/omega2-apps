@@ -74,7 +74,7 @@ func ProcessTweetWithEmotion(tweet anaconda.Tweet, httpClient *http.Client, fnAP
 		return err
 	}
 	fmt.Fprintln(os.Stderr, "ProcessTweetWithEmotion: request created")
-	fmt.Fprintf(os.Stderr, "ProcessTweetWithEmotion: media found: %s\n",
+	fmt.Fprintf(os.Stderr, "ProcessTweetWithEmotion: media found: %d\n",
 		len(tweet.Entities.Media))
 	if len(tweet.Entities.Media) != 0 {
 		media := tweet.Entities.Media[0]

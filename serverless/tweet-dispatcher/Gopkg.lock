@@ -41,7 +41,7 @@
   branch = "master"
   name = "github.com/denismakogon/omega2-apps"
   packages = ["serverless/twitter-daemon/api"]
-  revision = "722fd31b3ef626c8916717c8b23cd31a779a7d70"
+  revision = "dd8a5f916097cb1c8f5fa953127a8de64c78feb8"
 
 [[projects]]
   branch = "master"
