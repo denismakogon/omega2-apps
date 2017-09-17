@@ -53,7 +53,11 @@ func main() {
 					fmt.Sprintf("Unable to authorize to twitter. "+
 						"Error: %v", err.Error()))
 			} else {
+				for k, v := range req.Header {
+					fmt.Fprintf(os.Stderr, "%s: %s\n", k, v)
+				}
 				l, _ := strconv.Atoi(req.Header.Get("Content-Length"))
+
 				p := make([]byte, l)
 				_, err = r.Read(p)
 				if err != nil {
@@ -84,7 +88,10 @@ func main() {
 								} else {
 									fmt.Fprint(&buf, "OK\n")
 								}
-							} else {
+							}
+							fmt.Fprintf(os.Stderr, "Recognition type: %s\n", payload.RecognitionType)
+							if payload.RecognitionType == "emokognition" {
+								fmt.Fprintln(os.Stderr, "entering emokognition")
 								err = api.ProcessTweetWithEmotion(tweet, httpClient, payload.APIURL, "")
 								if err != nil {
 									writeBadResponse(&buf, &res,

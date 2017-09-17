@@ -71,7 +71,7 @@ func ProcessTweetWithEmotion(tweet anaconda.Tweet, httpClient *http.Client, fnAP
 	if err != nil {
 		return err
 	}
-	if len(tweet.Entities.Media) >= 1 {
+	if len(tweet.Entities.Media) != 0 {
 		media := tweet.Entities.Media[0]
 		payload := &RequestPayload{
 			MediaURL: media.Media_url,

@@ -93,7 +93,7 @@ func redeployFnApp(ctx context.Context, fnclient *client.Fn, app string, config 
 }
 
 func setupEmokognitionAppAndRoutes(fnAPIURL string, fnclient *client.Fn, twitterSecret *TwitterSecret, pgConfig *PostgresConfig) error {
-	app := "landmark"
+	app := "emokognition"
 	ctx, cancel := context.WithTimeout(context.Background(), 300*time.Second)
 	defer cancel()
 
@@ -113,11 +113,11 @@ func setupEmokognitionAppAndRoutes(fnAPIURL string, fnclient *client.Fn, twitter
 		return err
 	}
 	err = recreateRoute(ctx, fnclient, app,
-		"denismakogon/tweet-dispatcher:0.0.5",
+		"denismakogon/tweet-dispatcher:0.0.6",
 		"/tweet-dispatch",
 		"sync",
 		"http",
-		60, 120, uint64(126))
+		60, 120, uint64(256))
 	if err != nil {
 		return errors.New(err.Error())
 	}
@@ -209,7 +209,7 @@ func setupLandmarkAppAndRoutes(fnclient *client.Fn, gcloud *GCloudSecret, twitte
 		return errors.New(err.Error())
 	}
 	err = recreateRoute(ctx, fnclient, app,
-		"denismakogon/tweet-dispatcher:0.0.5",
+		"denismakogon/tweet-dispatcher:0.0.6",
 		"/tweet-dispatch",
 		"sync",
 		"http",

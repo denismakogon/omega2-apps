@@ -12,6 +12,7 @@ import (
 	"net/url"
 	"os"
 	"reflect"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -132,6 +133,10 @@ func DoUncheckedRequest(payload *RequestPayload, req *http.Request, httpClient *
 	if err != nil {
 		return nil, err
 	}
+
+	contentLength := len(body)
+	req.Header.Set("Content-Length", strconv.Itoa(contentLength))
+
 	req.Body = ioutil.NopCloser(bytes.NewReader(body))
 	resp, err := httpClient.Do(req)
 	defer resp.Body.Close()
