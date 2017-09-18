@@ -15,3 +15,4 @@ script:
   - make ci-build-twitter-daemon-mipsle
   - make ci-build-tweet-fail
   - make ci-build-tweet-success
+  - make ci-build-emotion-recorder

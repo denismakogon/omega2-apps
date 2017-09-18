@@ -20,9 +20,17 @@ build-twitter-daemon-mipsle:
 	rm -fr twitter-daemon
 
 build-emotion-recorder:
-	cd serverless/emotion-results; \
+	cd serverless/emotion-recognition/emotion-results; \
 	go build -race; \
 	rm -fr emotion-recorder
+
+dep-emotion-recorder:
+	cd serverless/emotion-recognition/emotion-results; \
+	dep ensure
+
+dep-emotion-recorder-up:
+	cd serverless/emotion-recognition/emotion-results; \
+	dep ensure -update
 
 ci-build-twitter-daemon:
 	cd serverless/twitter-daemon; \
@@ -37,15 +45,28 @@ ci-build-twitter-daemon-mipsle:
 	rm -fr twitter-daemon
 
 ci-build-tweet-fail:
-	cd serverless/tweet-fail; \
+	cd serverless/landmark-recognition/tweet-fail; \
 	${GOPATH}/bin/dep ensure; \
 	go build -race; \
-	rm -fr tweet-fail
+	rm -fr tweet-fail; \
+	docker build -t denismakogon/tweet-fail:latest .
+	docker rm denismakogon/tweet-fail:latest
 
 ci-build-tweet-success:
-	cd serverless/tweet-success; \
+	cd serverless/landmark-recognition/tweet-success; \
 	${GOPATH}/bin/dep ensure; \
 	go build -race; \
 	rm -fr tweet-success
+	docker build -t denismakogon/tweet-success:latest .
+	docker rm denismakogon/tweet-success:latest
+
+ci-build-emotion-recorder:
+	cd serverless/emotion-recognition/emotion-recorder; \
+	${GOPATH}/bin/dep ensure; \
+	go build; \
+	rm -fr emotion-recorder
+	docker build -t denismakogon/emotion-recorder:latest .
+	docker rm denismakogon/emotion-recorder:latest
+
 
 all: dep-twitter-daemon dep-twitter-daemon-up build-twitter-daemon
