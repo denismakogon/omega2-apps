@@ -49,23 +49,23 @@ ci-build-tweet-fail:
 	${GOPATH}/bin/dep ensure; \
 	go build -race; \
 	rm -fr tweet-fail; \
-	docker build -t denismakogon/tweet-fail:latest .
+	docker build -t denismakogon/tweet-fail:latest .; \
 	docker rm denismakogon/tweet-fail:latest
 
 ci-build-tweet-success:
 	cd serverless/landmark-recognition/tweet-success; \
 	${GOPATH}/bin/dep ensure; \
 	go build -race; \
-	rm -fr tweet-success
-	docker build -t denismakogon/tweet-success:latest .
+	rm -fr tweet-success; \
+	docker build -t denismakogon/tweet-success:latest .; \
 	docker rm denismakogon/tweet-success:latest
 
 ci-build-emotion-recorder:
 	cd serverless/emotion-recognition/emotion-recorder; \
 	${GOPATH}/bin/dep ensure; \
 	go build; \
-	rm -fr emotion-recorder
-	docker build -t denismakogon/emotion-recorder:latest .
+	rm -fr emotion-recorder; \
+	docker build -t denismakogon/emotion-recorder:latest .; \
 	docker rm denismakogon/emotion-recorder:latest
 
 
