@@ -12,7 +12,6 @@ import (
 	"net/url"
 	"os"
 	"reflect"
-	"strings"
 	"time"
 )
 
@@ -68,7 +67,7 @@ func StructFromEnv(i interface{}) error {
 		if tagValue := fi.Tag.Get("json"); tagValue != "" {
 			value := os.Getenv(tagValue)
 			if value == "" {
-				return fmt.Errorf("Missing env var: %v", strings.ToUpper(tagValue))
+				return fmt.Errorf("Missing env var: %s", tagValue)
 			}
 			v.FieldByName(fi.Name).SetString(value)
 		}
@@ -151,15 +150,14 @@ func DoRequest(payload *RequestPayload, req *http.Request, httpClient *http.Clie
 		if err != nil {
 			return err
 		}
-		fmt.Fprintf(os.Stderr, fmt.Sprintf("New detect func submitted. Call ID: %v", callID.ID))
+		fmt.Printf("New detect func submitted. Call ID: %v\n", callID.ID)
 	} else {
 		apiError := new(ErrBody)
 		err = json.NewDecoder(resp.Body).Decode(&apiError)
 		if err != nil {
 			return err
 		}
-		fmt.Fprintf(os.Stderr, fmt.Sprintf("Error during detect func submittion. Call ID: %v",
-			apiError.Error.Message))
+		fmt.Printf("Error during detect func submittion. Call ID: %s", apiError.Error.Message)
 	}
 	return nil
 }

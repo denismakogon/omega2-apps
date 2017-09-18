@@ -7,7 +7,9 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"os/signal"
 	"sync"
+	"syscall"
 	"time"
 )
 
@@ -19,6 +21,9 @@ func asyncRunner(omega *api.OnionOmega2, fnAPIURL, fnToken string, proc func(twe
 		panic("Initial tweet ID env var is not set, but suppose to be!")
 	}
 	omega.SetTweetIDToStartFrom(tweetID)
+	sigs := make(chan os.Signal, 1)
+	done := make(chan bool, 1)
+	signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM)
 	wg := new(sync.WaitGroup)
 	for {
 		tweets, err := omega.GetRecentMentions()
@@ -38,10 +43,16 @@ func asyncRunner(omega *api.OnionOmega2, fnAPIURL, fnToken string, proc func(twe
 					}
 				}()
 			}
-			wg.Wait()
 		}
 		time.Sleep(time.Second * 6)
 	}
+	go func() {
+		sig := <-sigs
+		fmt.Println(sig)
+		wg.Wait()
+		done <- true
+	}()
+
 }
 
 func EmotionRecognition() {

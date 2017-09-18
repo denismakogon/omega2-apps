@@ -43,8 +43,9 @@ func (omega *OnionOmega2) GetRecentMentions() (tweets []anaconda.Tweet, err erro
 		return nil, err
 	}
 	if len(tweets) != 0 {
-		omega.SearchValues.Set(
-			"since_id", strconv.FormatInt(tweets[len(tweets)-1].Id, 10))
+		// seems like tweets are now ordered from recent to oldest
+		since_id := strconv.FormatInt(tweets[0].Id, 10)
+		omega.SearchValues.Set("since_id", since_id)
 	}
 	return tweets, nil
 }
