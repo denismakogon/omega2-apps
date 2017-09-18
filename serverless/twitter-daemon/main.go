@@ -11,12 +11,11 @@ import (
 	"time"
 )
 
-func asyncRunner(omega *api.OnionOmega2, recognitionType, fnAPIURL, fnToken string, proc func(tweet anaconda.Tweet, httpClient *http.Client, fnAPIURL, fnToken string) error) {
+func asyncRunner(omega *api.OnionOmega2, fnAPIURL, fnToken string, proc func(tweet anaconda.Tweet, httpClient *http.Client, fnAPIURL, fnToken string) error) {
 	httpClient := api.SetupHTTPClient()
 
 	tweetID := os.Getenv("InitialTweetID")
 	if tweetID == "" {
-		// start to look for tweets from the very beginning
 		panic("Initial tweet ID env var is not set, but suppose to be!")
 	}
 	omega.SetTweetIDToStartFrom(tweetID)
@@ -71,7 +70,7 @@ func EmotionRecognition() {
 		TwitterAPI:   twitterAPI,
 		SearchValues: &v,
 	}
-	asyncRunner(&omega, "emokognition", fnAPIURL, fnToken, api.ProcessTweetWithEmotion)
+	asyncRunner(&omega, fnAPIURL, fnToken, api.ProcessTweetWithEmotion)
 }
 
 func LandmarkRecognition() {
@@ -102,7 +101,7 @@ func LandmarkRecognition() {
 		SearchValues: &v,
 		GCloudAuth:   gc,
 	}
-	asyncRunner(&omega, "landmark", fnAPIURL, fnToken, api.ProcessTweetWithLandmark)
+	asyncRunner(&omega, fnAPIURL, fnToken, api.ProcessTweetWithLandmark)
 }
 
 func main() {

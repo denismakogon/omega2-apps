@@ -12,7 +12,6 @@ import (
 	"net/url"
 	"os"
 	"reflect"
-	"strconv"
 	"strings"
 	"time"
 )
@@ -134,12 +133,9 @@ func DoUncheckedRequest(payload *RequestPayload, req *http.Request, httpClient *
 		return nil, err
 	}
 
-	contentLength := len(body)
-	req.Header.Set("Content-Length", strconv.Itoa(contentLength))
-
+	req.ContentLength = int64(len(body))
 	req.Body = ioutil.NopCloser(bytes.NewReader(body))
 	resp, err := httpClient.Do(req)
-	defer resp.Body.Close()
 	if err != nil {
 		return nil, err
 	}
@@ -148,6 +144,7 @@ func DoUncheckedRequest(payload *RequestPayload, req *http.Request, httpClient *
 
 func DoRequest(payload *RequestPayload, req *http.Request, httpClient *http.Client, fnToken string) error {
 	resp, err := DoUncheckedRequest(payload, req, httpClient, fnToken)
+	defer resp.Body.Close()
 	if resp.StatusCode == http.StatusAccepted || resp.StatusCode == http.StatusOK {
 		callID := new(CallID)
 		err = json.NewDecoder(resp.Body).Decode(&callID)

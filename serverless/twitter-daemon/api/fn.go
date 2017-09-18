@@ -115,7 +115,7 @@ func setupEmokognitionAppAndRoutes(fnAPIURL string, fnclient *client.Fn, twitter
 	err = recreateRoute(ctx, fnclient, app,
 		"denismakogon/emotion-recorder:0.0.10",
 		"/recorder",
-		"sync",
+		"async",
 		"http",
 		60, 120, uint64(256))
 	if err != nil {
@@ -131,7 +131,7 @@ func setupEmokognitionAppAndRoutes(fnAPIURL string, fnclient *client.Fn, twitter
 		return errors.New(err.Error())
 	}
 	err = recreateRoute(ctx, fnclient, app,
-		"denismakogon/emokognition:0.0.3",
+		"denismakogon/emokognition:0.0.4",
 		"/detect",
 		"async",
 		"default",
@@ -140,7 +140,7 @@ func setupEmokognitionAppAndRoutes(fnAPIURL string, fnclient *client.Fn, twitter
 		return errors.New(err.Error())
 	}
 	err = recreateRoute(ctx, fnclient, app,
-		"denismakogon/emokognition-view:0.0.6",
+		"denismakogon/emokognition-view:0.0.7",
 		"/index.html",
 		"sync",
 		"default",
