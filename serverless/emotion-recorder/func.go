@@ -69,7 +69,14 @@ func main() {
 					fmt.Sprintf("Unable to read request from STDIN, "+
 						"it might be empty. Error: %v", err.Error()))
 			} else {
-				l, err := strconv.Atoi(req.Header.Get("Content-Length"))
+				for name, value := range req.Header {
+					fmt.Fprintf(os.Stderr, "%s: %s\n", name, value)
+				}
+				cLen := req.Header.Get("Content-Length")
+				if cLen == "" {
+					cLen = req.Header.Get("Fn_header_content_length")
+				}
+				l, err := strconv.Atoi(cLen)
 				if err != nil {
 					writeBadResponse(&buf, &res,
 						fmt.Sprintf("Failed to convert content length to int: %s", err.Error()))

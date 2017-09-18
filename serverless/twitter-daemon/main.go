@@ -21,11 +21,6 @@ func asyncRunner(omega *api.OnionOmega2, fnAPIURL, fnToken string, proc func(twe
 	omega.SetTweetIDToStartFrom(tweetID)
 	wg := new(sync.WaitGroup)
 	for {
-		ok, err := omega.TwitterAPI.VerifyCredentials()
-		if !ok {
-			fmt.Println(err.Error())
-			panic(err.Error())
-		}
 		tweets, err := omega.GetRecentMentions()
 		if err != nil {
 			fmt.Println(err.Error())
@@ -45,7 +40,7 @@ func asyncRunner(omega *api.OnionOmega2, fnAPIURL, fnToken string, proc func(twe
 			}
 			wg.Wait()
 		}
-		time.Sleep(time.Second * 3)
+		time.Sleep(time.Second * 6)
 	}
 }
 
@@ -62,9 +57,9 @@ func EmotionRecognition() {
 		panic(err.Error())
 	}
 
-	// get latest 200 tweets fro InitialTweet
+	// get latest 10 tweets fro InitialTweet
 	v := url.Values{}
-	v.Set("count", "200")
+	v.Set("count", "10")
 
 	omega := api.OnionOmega2{
 		TwitterAPI:   twitterAPI,
