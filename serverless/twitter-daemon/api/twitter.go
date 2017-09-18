@@ -1,7 +1,6 @@
 package api
 
 import (
-	"errors"
 	"fmt"
 	"github.com/ChimeraCoder/anaconda"
 	"net/http"
@@ -24,13 +23,6 @@ func (twitter *TwitterSecret) FromFile() (*anaconda.TwitterApi, error) {
 	anaconda.SetConsumerKey(twitter.ConsumerKey)
 	anaconda.SetConsumerSecret(twitter.ConsumerSecret)
 	api := anaconda.NewTwitterApi(twitter.APIToken, twitter.APITokenSecret)
-	ok, err := api.VerifyCredentials()
-	if !ok {
-		return nil, errors.New("Unauthorized to Twitter")
-	}
-	if err != nil {
-		return nil, err
-	}
 	return api, nil
 }
 
@@ -42,13 +34,6 @@ func (twitter *TwitterSecret) FromEnv() (*anaconda.TwitterApi, error) {
 	anaconda.SetConsumerKey(twitter.ConsumerKey)
 	anaconda.SetConsumerSecret(twitter.ConsumerSecret)
 	api := anaconda.NewTwitterApi(twitter.APIToken, twitter.APITokenSecret)
-	ok, err := api.VerifyCredentials()
-	if !ok {
-		return nil, errors.New("Unauthorized to Twitter")
-	}
-	if err != nil {
-		return nil, err
-	}
 	return api, nil
 }
 
