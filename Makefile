@@ -50,7 +50,7 @@ ci-build-tweet-fail:
 	go build -race; \
 	rm -fr tweet-fail; \
 	docker build -t denismakogon/tweet-fail:latest .; \
-	docker rm denismakogon/tweet-fail:latest
+	docker rmi denismakogon/tweet-fail:latest
 
 ci-build-tweet-success:
 	cd serverless/landmark-recognition/tweet-success; \
@@ -58,7 +58,7 @@ ci-build-tweet-success:
 	go build -race; \
 	rm -fr tweet-success; \
 	docker build -t denismakogon/tweet-success:latest .; \
-	docker rm denismakogon/tweet-success:latest
+	docker rmi denismakogon/tweet-success:latest
 
 ci-build-emotion-recorder:
 	cd serverless/emotion-recognition/emotion-recorder; \
@@ -66,7 +66,7 @@ ci-build-emotion-recorder:
 	go build; \
 	rm -fr emotion-recorder; \
 	docker build -t denismakogon/emotion-recorder:latest .; \
-	docker rm denismakogon/emotion-recorder:latest
+	docker rmi denismakogon/emotion-recorder:latest
 
 
 all: dep-twitter-daemon dep-twitter-daemon-up build-twitter-daemon
