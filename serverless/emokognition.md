@@ -13,7 +13,7 @@ This app consists of following components:
  - [Emotion recorder](emotion-recognition/emotion-recorder)
  - [Emotion results](emotion-recognition/emotion-results)
  - [Mood statistics UI](emotion-recognition/emokognition-results-view-html)
- - [Persistence layer](https://www.postgresql.org/)
+ - [Persistence layer](https://www.postgresql.org)
 
 Twitter daemon
 --------------
@@ -102,14 +102,14 @@ For default format it means that function gets started only for one call and the
 For http format it means that function stays alive while something calls it and dies if there were no calls within certain time frame.
 Previously mentioned functions are deployed with following formats:
 
- - `emokognition`: default
+ - `emokognition`: http
  - `emotion-recorder`:  http
  - `mood statistics UI`:  default
  - `emotion results`:  default
 
 On the following figure you can see how emotion recognition works:
 
-![emotion recognition flow](emokognition.jpg)
+![emotion recognition flow](emokognition.png)
 
 For each new tweet daemon starts new sync emotion recognition function, each emotion recognition function calls emotion recorder function to make a record of its results. 
 
