@@ -1,10 +1,26 @@
+# All Rights Reserved.
+#
+#    Licensed under the Apache License, Version 2.0 (the "License"); you may
+#    not use this file except in compliance with the License. You may obtain
+#    a copy of the License at
+#
+#         http://www.apache.org/licenses/LICENSE-2.0
+#
+#    Unless required by applicable law or agreed to in writing, software
+#    distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+#    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+#    License for the specific language governing permissions and limitations
+#    under the License.
+
 import cv2
-import json
 import numpy as np
 import ssl
 import sys
 import os
 import requests
+import json
+
+from hotfn.http import main
 
 from urllib import request
 from emotions import constants
@@ -16,8 +32,18 @@ network = recognition.EmotionRecognition()
 network.build_network()
 network.load_model_from_external_file("/code/cli/face_recognition_model")
 
-if __name__ == "__main__":
-    data = json.loads(sys.stdin.read())
+
+@main.coerce_input_to_content_type
+def app(data):
+    # NOTE: this really depends on content type,
+    # i assume here that request body can be:
+    # - plain/text
+    # - application/json
+    if isinstance(data, str):
+        data = json.loads(data)
+    if isinstance(data, dict):
+        pass
+
     emotion_dict = {}
     ctx = None
     if "https" in data["media_url"]:
@@ -50,6 +76,11 @@ if __name__ == "__main__":
             "alt_emotion": alt_emotion,
             "main_emotion": main_emotion,
         })
-        print("OK")
+        return "OK"
     except Exception as ex:
         sys.stderr.write(str(ex))
+        raise ex
+
+
+if __name__ == "__main__":
+    main.main(app)
