@@ -1,0 +1,8 @@
+name: denismakogon/emotion-recorder
+version: 0.0.11
+format: http
+path: /recorder
+type: async
+timeout: 60
+idle_timeout: 120
+memory: 256
