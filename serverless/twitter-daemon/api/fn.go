@@ -135,7 +135,7 @@ func setupEmokognitionAppAndRoutes(fnAPIURL string, fnclient *client.Fn, twitter
 		"/detect",
 		"async",
 		"http",
-		200, 200, uint64(2048))
+		120, 200, uint64(1024))
 	if err != nil {
 		return errors.New(err.Error())
 	}
@@ -144,7 +144,7 @@ func setupEmokognitionAppAndRoutes(fnAPIURL string, fnclient *client.Fn, twitter
 		"/index.html",
 		"sync",
 		"http",
-		200, 200, uint64(256))
+		120, 200, uint64(256))
 	if err != nil {
 		return errors.New(err.Error())
 	}
