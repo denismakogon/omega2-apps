@@ -1,6 +1,6 @@
 name: denismakogon/emokognition-view
-version: 0.0.9
-format: default
+version: 0.0.10
+format: http
 path: /index.html
 type: sync
 timeout: 60

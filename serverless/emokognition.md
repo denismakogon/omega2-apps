@@ -104,8 +104,8 @@ Previously mentioned functions are deployed with following formats:
 
  - `emokognition`: http
  - `emotion-recorder`:  http
- - `mood statistics UI`:  default
- - `emotion results`:  default
+ - `mood statistics UI`:  hot
+ - `emotion results`:  hot
 
 On the following figure you can see how emotion recognition works:
 

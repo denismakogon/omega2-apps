@@ -140,11 +140,11 @@ func setupEmokognitionAppAndRoutes(fnAPIURL string, fnclient *client.Fn, twitter
 		return errors.New(err.Error())
 	}
 	err = recreateRoute(ctx, fnclient, app,
-		"denismakogon/emokognition-view:0.0.9",
+		"denismakogon/emokognition-view:0.0.10",
 		"/index.html",
 		"sync",
-		"default",
-		60, 120, uint64(256))
+		"http",
+		60, 200, uint64(256))
 	if err != nil {
 		return errors.New(err.Error())
 	}

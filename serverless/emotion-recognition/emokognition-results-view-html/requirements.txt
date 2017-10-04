@@ -1,2 +1,3 @@
 Jinja2
 requests
+hotfn==0.0.6
