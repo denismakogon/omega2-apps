@@ -161,5 +161,4 @@ docker run --name postgres -p 5432:5432 -e POSTGRES_PASSWORD=postgres -e POSTGRE
 TODOs
 -----
 
- - write emotion-results in Go
  - write emokognition-results-view in Go

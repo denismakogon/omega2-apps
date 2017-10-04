@@ -1,8 +1,8 @@
 name: denismakogon/emotion-results
-version: 0.0.4
-format: default
+version: 0.0.5
+format: http
 path: /results
 type: sync
 timeout: 60
 idle_timeout: 200
-memory: 256
+memory: 512

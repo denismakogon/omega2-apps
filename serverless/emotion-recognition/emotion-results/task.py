@@ -7,6 +7,10 @@ import sys
 
 import aiopg
 
+from hotfn.http import response
+from hotfn.http import worker
+
+
 CREATE = ("CREATE TABLE IF NOT EXISTS emotions ("
           "id SERIAL, "
           "main_emotion VARCHAR(255) NOT NULL, "
@@ -23,11 +27,33 @@ ALT_SELECT = {
 }
 
 
-async def select_votes(pg_dns):
+async def select_votes(context, data=None, loop=None):
+    print("Entering coroutine\n", file=sys.stderr, flush=True)
+    pg_host = os.environ.get('pg_host')
+    pg_port = os.environ.get('pg_port')
+    pg_db = os.environ.get('pg_db')
+    pg_user = os.environ.get('pg_user')
+    pg_pswd = os.environ.get('pg_pswd')
+    pg_dns = (
+        'dbname={database} '
+        'user={user} '
+        'password={passwd} '
+        'host={host} '
+        'port={port}'
+        .format(host=pg_host, 
+                database=pg_db, 
+                user=pg_user, 
+                passwd=pg_pswd,
+                port=pg_port)
+    )
+    print("Establishing connection\n", file=sys.stderr, flush=True)
     final = {}
     async with aiopg.create_pool(pg_dns) as pool:
+        print("pool created\n", file=sys.stderr, flush=True)
         async with pool.acquire() as conn:
+            print("connection acquired\n", file=sys.stderr, flush=True)
             async with conn.cursor() as cur:
+                print("cursor created\n", file=sys.stderr, flush=True)
                 await cur.execute(CREATE)
                 for o in [MAIN_SELECT, ALT_SELECT]:
                     await cur.execute(o["q"])
@@ -37,20 +63,12 @@ async def select_votes(pg_dns):
                         result[emotion] = count
                     full_result = dict(result)
                     final[o["name"]] = full_result
-                return final
+            print("stats created\n", file=sys.stderr, flush=True)
+            return response.RawResponse(context.version, 200, "OK", http_headers={
+                "Content-Type": "application/json; charset=utf-8",
+            }, response_data=json.dumps(final))
 
 
 if __name__ == "__main__":
-    if not os.isatty(sys.stdin.fileno()):
-        pg_host = os.environ.get('PG_HOST'.lower())
-        pg_port = os.environ.get('PG_PORT'.lower())
-        pg_db = os.environ.get('PG_DB'.lower())
-        pg_user = os.environ.get('PG_USER'.lower())
-        pg_pswd = os.environ.get('PG_PSWD'.lower())
-        pg_dns = (
-            'dbname={database} user={user} password={passwd} host={host}'
-            .format(host=pg_host, database=pg_db, user=pg_user, passwd=pg_pswd))
-
-        loop = asyncio.get_event_loop()
-        result = loop.run_until_complete(select_votes(pg_dns))
-        print(json.dumps(result))
+    loop = asyncio.get_event_loop()
+    worker.run(select_votes, loop=loop)
