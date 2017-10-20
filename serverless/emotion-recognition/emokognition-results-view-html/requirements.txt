@@ -1,3 +1,3 @@
 Jinja2
 requests
-hotfn==0.0.6
+fdk==0.0.2

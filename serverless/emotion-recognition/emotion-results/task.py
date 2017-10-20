@@ -7,8 +7,9 @@ import sys
 
 import aiopg
 
-from hotfn.http import response
-from hotfn.http import worker
+import fdk
+
+from fdk.http import response
 
 
 CREATE = ("CREATE TABLE IF NOT EXISTS emotions ("
@@ -71,4 +72,4 @@ async def select_votes(context, data=None, loop=None):
 
 if __name__ == "__main__":
     loop = asyncio.get_event_loop()
-    worker.run(select_votes, loop=loop)
+    fdk.handle(select_votes, loop=loop)

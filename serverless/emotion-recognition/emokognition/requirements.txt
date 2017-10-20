@@ -4,4 +4,4 @@ numpy==1.13.1
 tensorflow==1.0.0
 tflearn==0.3.2
 requests==2.18.4
-hotfn==0.0.5
+fdk==0.0.2

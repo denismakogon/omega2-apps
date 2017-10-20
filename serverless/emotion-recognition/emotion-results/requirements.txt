@@ -1,2 +1,2 @@
 aiopg
-hotfn==0.0.6
+fdk==0.0.2

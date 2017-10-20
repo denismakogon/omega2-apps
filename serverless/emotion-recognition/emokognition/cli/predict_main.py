@@ -20,7 +20,7 @@ import os
 import requests
 import json
 
-from hotfn.http import main
+import fdk
 
 from urllib import request
 from emotions import constants
@@ -33,8 +33,8 @@ network.build_network()
 network.load_model_from_external_file("/code/cli/face_recognition_model")
 
 
-@main.coerce_input_to_content_type
-def app(data):
+@fdk.coerce_http_input_to_content_type
+def handler(context, data=None, loop=None):
     # NOTE: this really depends on content type,
     # i assume here that request body can be:
     # - plain/text
@@ -83,4 +83,4 @@ def app(data):
 
 
 if __name__ == "__main__":
-    main.main(app)
+    fdk.handle(handler)

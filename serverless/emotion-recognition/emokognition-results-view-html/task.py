@@ -4,8 +4,8 @@ import os
 import sys
 import asyncio
 
-from hotfn.http import response
-from hotfn.http import worker
+import fdk
+from fdk.http import response
 
 loader = jinja2.FileSystemLoader('./index.html')
 env = jinja2.Environment(loader=loader)
@@ -40,10 +40,10 @@ async def build_view(context, data=None, loop=None):
         "total": total
     }
     return response.RawResponse(context.version, 200, "OK", http_headers={
-        "Content-Type": "text/html",
+        http_headers="Content-Type": "text/html",
     }, response_data=template.render(render_context))
 
 
 if __name__ == "__main__":
     loop = asyncio.get_event_loop()
-    worker.run(build_view, loop=loop)
+    fdk.handle(build_view, loop=loop)
