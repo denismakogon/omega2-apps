@@ -39,9 +39,15 @@ async def build_view(context, data=None, loop=None):
         "alt_emotions": alt,
         "total": total
     }
-    return response.RawResponse(context.version, 200, "OK", http_headers={
-        http_headers="Content-Type": "text/html",
-    }, response_data=template.render(render_context))
+    headers = {
+        "Content-Type": "text/html",
+    }
+    return response.RawResponse(
+        http_proto_version=context.version,
+        status_code=200,
+        headers=headers,
+        response_data=template.render(render_context)
+    )
 
 
 if __name__ == "__main__":

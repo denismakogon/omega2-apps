@@ -1,5 +1,5 @@
 name: denismakogon/emokognition
-version: 0.0.5
+version: 0.0.6
 format: http
 path: /detect
 type: async
