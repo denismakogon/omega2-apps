@@ -70,7 +70,7 @@ func EmotionRecognition() {
 
 	// get latest 10 tweets fro InitialTweet
 	v := url.Values{}
-	v.Set("count", "10")
+	v.Set("count", "200")
 
 	omega := api.OnionOmega2{
 		TwitterAPI:   twitterAPI,
