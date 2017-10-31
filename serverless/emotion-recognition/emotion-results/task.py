@@ -49,25 +49,32 @@ async def select_votes(context, data=None, loop=None):
     )
     print("Establishing connection\n", file=sys.stderr, flush=True)
     final = {}
-    async with aiopg.create_pool(pg_dns) as pool:
-        print("pool created\n", file=sys.stderr, flush=True)
-        async with pool.acquire() as conn:
-            print("connection acquired\n", file=sys.stderr, flush=True)
-            async with conn.cursor() as cur:
-                print("cursor created\n", file=sys.stderr, flush=True)
-                await cur.execute(CREATE)
-                for o in [MAIN_SELECT, ALT_SELECT]:
-                    await cur.execute(o["q"])
-                    result = collections.defaultdict(int)
-                    async for row in cur:
-                        emotion, count = row
-                        result[emotion] = count
-                    full_result = dict(result)
-                    final[o["name"]] = full_result
-            print("stats created\n", file=sys.stderr, flush=True)
-            return response.RawResponse(context.version, 200, "OK", http_headers={
-                "Content-Type": "application/json; charset=utf-8",
-            }, response_data=json.dumps(final))
+    try:
+        async with aiopg.create_pool(pg_dns) as pool:
+            print("pool created\n", file=sys.stderr, flush=True)
+            async with pool.acquire() as conn:
+                print("connection acquired\n", file=sys.stderr, flush=True)
+                async with conn.cursor() as cur:
+                    print("cursor created\n", file=sys.stderr, flush=True)
+                    await cur.execute(CREATE)
+                    for o in [MAIN_SELECT, ALT_SELECT]:
+                        await cur.execute(o["q"])
+                        print("cursor awaited\n", file=sys.stderr, flush=True)
+                        result = collections.defaultdict(int)
+                        async for row in cur:
+                            emotion, count = row
+                            result[emotion] = count
+                        full_result = dict(result)
+                        final[o["name"]] = full_result
+                print("stats created\n", file=sys.stderr, flush=True)
+    except Exception as ex:
+        return response.RawResponse(context.version, status_code=500, headers={
+            "Content-Type": "text/plain; charset=utf-8",
+        }, response_data=str(ex))
+
+    return response.RawResponse(context.version, status_code=200, headers={
+        "Content-Type": "application/json; charset=utf-8",
+    }, response_data=json.dumps(final))
 
 
 if __name__ == "__main__":
