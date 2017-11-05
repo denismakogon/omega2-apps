@@ -28,11 +28,12 @@ class Application(object):
         return x * y
 
     @decorators.fn(fn_type="sync", dependencies={
-        "requests_get": requests.get
+        "requests": requests
     })
     def request(self, *args, **kwargs):
-        requests_get = kwargs["dependencies"].get("requests_get")
-        r = requests_get('https://api.github.com/events')
+        cached_dependencies = kwargs["dependencies"]
+        requests = cached_dependencies.get("requests")
+        r = requests.get('https://api.github.com/events')
         r.raise_for_status()
         return r.text
 
@@ -41,10 +42,10 @@ if __name__ == "__main__":
 
     app = Application(config={})
 
-    res, err = app.square(10, 20)
-    if err:
-        raise err
-    print(res)
+    # res, err = app.square(10, 20)
+    # if err:
+    #     raise err
+    # print(res)
 
     res, err = app.request()
     if err:
