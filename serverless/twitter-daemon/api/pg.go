@@ -3,11 +3,11 @@ package api
 import "fmt"
 
 type PostgresConfig struct {
-	Host     string `json:"pg_host"`
-	Port     string `json:"pg_port"`
-	DB       string `json:"pg_db"`
-	User     string `json:"pg_user"`
-	Password string `json:"pg_pswd"`
+	Host     string `json:"postgres_host"`
+	Port     string `json:"postgres_port"`
+	DB       string `json:"postgres_db"`
+	User     string `json:"postgres_user"`
+	Password string `json:"postgres_password"`
 }
 
 func (pgsql *PostgresConfig) FromFile() error {

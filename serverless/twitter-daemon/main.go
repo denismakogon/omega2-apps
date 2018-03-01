@@ -7,65 +7,60 @@ import (
 	"net/http"
 	"net/url"
 	"os"
-	"os/signal"
-	"sync"
-	"syscall"
-	"time"
+	//"sync"
+	//"time"
 )
 
 func asyncRunner(omega *api.OnionOmega2, fnAPIURL, fnToken string, proc func(tweet anaconda.Tweet, httpClient *http.Client, fnAPIURL, fnToken string) error) {
-	httpClient := api.SetupHTTPClient()
-
-	tweetID := os.Getenv("InitialTweetID")
-	if tweetID == "" {
-		panic("Initial tweet ID env var is not set, but suppose to be!")
-	}
-	omega.SetTweetIDToStartFrom(tweetID)
-	sigs := make(chan os.Signal, 1)
-	done := make(chan bool, 1)
-	signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM)
-	wg := new(sync.WaitGroup)
-	for {
-		tweets, err := omega.GetRecentMentions()
-		if err != nil {
-			fmt.Println(err.Error())
-			panic(err.Error())
-		}
-		if len(tweets) != 0 {
-			wg.Add(len(tweets))
-			for _, tweet := range tweets {
-				omega.PrintTweetInfo(tweet)
-				go func() {
-					defer wg.Done()
-					err = proc(tweet, httpClient, fnAPIURL, fnToken)
-					if err != nil {
-						panic(err.Error())
-					}
-				}()
-			}
-		}
-		time.Sleep(time.Second * 6)
-	}
-	go func() {
-		sig := <-sigs
-		fmt.Println(sig)
-		wg.Wait()
-		done <- true
-	}()
-
+	//httpClient := api.SetupHTTPClient()
+	//
+	//tweetID := os.Getenv("InitialTweetID")
+	//if tweetID == "" {
+	//	panic("Initial tweet ID env var is not set, but suppose to be!")
+	//}
+	//omega.SetTweetIDToStartFrom(tweetID)
+	//wg := new(sync.WaitGroup)
+	//
+	//for {
+	//	tweets, err := omega.GetRecentMentions()
+	//	if err != nil {
+	//		fmt.Fprintln(os.Stderr, err.Error())
+	//		os.Exit(1)
+	//	}
+	//	if len(tweets) != 0 {
+	//		wg.Add(len(tweets))
+	//		for _, tweet := range tweets {
+	//			omega.PrintTweetInfo(tweet)
+	//			go func() {
+	//				defer wg.Done()
+	//				err = proc(tweet, httpClient, fnAPIURL, fnToken)
+	//				if err != nil {
+	//					fmt.Fprintln(os.Stderr, err.Error())
+	//					os.Exit(1)
+	//				}
+	//			}()
+	//		}
+	//	}
+	//	time.Sleep(time.Second * 6)
+	//}
 }
 
-func EmotionRecognition() {
+func EmotionRecognition() error {
 	pgConf := new(api.PostgresConfig)
-	pgConf.FromFile()
-	twitter := new(api.TwitterSecret)
-	twitterAPI, err := twitter.FromFile()
+	err := pgConf.FromEnv()
 	if err != nil {
-		panic(err.Error())
+		return err
 	}
+
+	twitter := new(api.TwitterSecret)
+	twitterAPI, err := twitter.FromEnv()
+	if err != nil {
+		return err
+	}
+
 	fnAPIURL, fnToken, err := api.SetupEmoKognitionFunctions(twitter, pgConf)
 	if err != nil {
-		panic(err.Error())
+		return err
 	}
 
 	// get latest 10 tweets fro InitialTweet
@@ -77,25 +72,26 @@ func EmotionRecognition() {
 		SearchValues: &v,
 	}
 	asyncRunner(&omega, fnAPIURL, fnToken, api.ProcessTweetWithEmotion)
+	return nil
 }
 
-func LandmarkRecognition() {
+func LandmarkRecognition() error {
 
 	twitter := new(api.TwitterSecret)
 	twitterAPI, err := twitter.FromFile()
 	if err != nil {
-		panic(err.Error())
+		return err
 	}
 
 	gc := new(api.GCloudSecret)
 	err = gc.FromFile()
 	if err != nil {
-		panic(err.Error())
+		return err
 	}
 
 	fnAPIURL, fnToken, err := api.SetupLandmarkRecognitionFunctions(gc, twitter)
 	if err != nil {
-		panic(err.Error())
+		return err
 	}
 
 	// get latest 200 tweets
@@ -108,17 +104,27 @@ func LandmarkRecognition() {
 		GCloudAuth:   gc,
 	}
 	asyncRunner(&omega, fnAPIURL, fnToken, api.ProcessTweetWithLandmark)
+	return nil
 }
 
 func main() {
 	botType := os.Getenv("TwitterBotType")
 	if botType == "landmark" {
-		LandmarkRecognition()
+		err := LandmarkRecognition()
+		if err != nil {
+			fmt.Fprintln(os.Stderr, err.Error())
+			os.Exit(1)
+		}
 	}
 	if botType == "emokognition" {
-		EmotionRecognition()
+		err := EmotionRecognition()
+		if err != nil {
+			fmt.Fprintln(os.Stderr, err.Error())
+			os.Exit(1)
+		}
 	}
 	if botType == "" {
-		panic("Recognition type is not set.")
+		fmt.Fprintln(os.Stderr, "Recognition type is not set.")
+		os.Exit(1)
 	}
 }

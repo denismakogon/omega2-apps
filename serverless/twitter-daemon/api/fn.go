@@ -10,6 +10,7 @@ import (
 	"github.com/fnproject/fn_go/models"
 	openapi "github.com/go-openapi/runtime/client"
 	"github.com/go-openapi/strfmt"
+	"net/url"
 	"os"
 	"time"
 )
@@ -106,7 +107,7 @@ func setupEmokognitionAppAndRoutes(fnAPIURL string, fnclient *client.Fn, twitter
 	if err != nil {
 		return err
 	}
-	config["FN_API_URL"] = fmt.Sprintf("http://%v", fnAPIURL)
+	config["FN_API_URL"] = fnAPIURL
 
 	err = redeployFnApp(ctx, fnclient, app, config)
 	if err != nil {
@@ -133,8 +134,8 @@ func setupEmokognitionAppAndRoutes(fnAPIURL string, fnclient *client.Fn, twitter
 	err = recreateRoute(ctx, fnclient, app,
 		"denismakogon/emokognition:0.0.7",
 		"/detect",
-		"async",
-		"http",
+		"sync",
+		"json",
 		120, 200, uint64(1536))
 	if err != nil {
 		return errors.New(err.Error())
@@ -202,24 +203,33 @@ func setupLandmarkAppAndRoutes(fnclient *client.Fn, gcloud *GCloudSecret, twitte
 	return nil
 }
 
-func setupFNClient() (string, string, *client.Fn) {
-	fnAPIURL := os.Getenv("API_URL")
+func setupFNClient() (string, string, *client.Fn, error) {
+	fnAPIURL := os.Getenv("FN_API_URL")
+	fmt.Fprintln(os.Stderr, "Fn API URL: ", fnAPIURL)
 	if fnAPIURL == "" {
-		fnAPIURL = "localhost:8080"
+		fnAPIURL = "http://localhost:8080"
 	}
+	u, err := url.Parse(fnAPIURL)
+	if err != nil {
+		return "", "", nil, err
+	}
+
 	fnToken := os.Getenv("FN_TOKEN")
-	fnTransport := openapi.New(fnAPIURL, "/v1", []string{"http"})
-	if fnToken != "" && os.Getenv("API_URL") != "" {
+	fnTransport := openapi.New(u.Host, "/v1", []string{u.Scheme})
+	if fnToken != "" {
 		fnTransport.DefaultAuthentication = openapi.BearerToken(fnToken)
 	}
 	// create the API client, with the transport
 	fnclient := client.New(fnTransport, strfmt.Default)
-	return fnAPIURL, fnToken, fnclient
+	return fnAPIURL, fnToken, fnclient, nil
 }
 
 func SetupEmoKognitionFunctions(twitterSecret *TwitterSecret, pgConfig *PostgresConfig) (string, string, error) {
-	fnAPIURL, fnToken, fnclient := setupFNClient()
-	err := setupEmokognitionAppAndRoutes(fnAPIURL, fnclient, twitterSecret, pgConfig)
+	fnAPIURL, fnToken, fnclient, err := setupFNClient()
+	if err != nil {
+		return "", "", err
+	}
+	err = setupEmokognitionAppAndRoutes(fnAPIURL, fnclient, twitterSecret, pgConfig)
 	if err != nil {
 		return "", "", err
 	}
@@ -227,8 +237,11 @@ func SetupEmoKognitionFunctions(twitterSecret *TwitterSecret, pgConfig *Postgres
 }
 
 func SetupLandmarkRecognitionFunctions(gc *GCloudSecret, twitterSecret *TwitterSecret) (string, string, error) {
-	fnAPIURL, fnToken, fnclient := setupFNClient()
-	err := setupLandmarkAppAndRoutes(fnclient, gc, twitterSecret)
+	fnAPIURL, fnToken, fnclient, err := setupFNClient()
+	if err != nil {
+		return "", "", err
+	}
+	err = setupLandmarkAppAndRoutes(fnclient, gc, twitterSecret)
 	if err != nil {
 		return "", "", err
 	}

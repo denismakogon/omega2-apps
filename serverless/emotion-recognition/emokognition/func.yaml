@@ -1,6 +1,6 @@
 name: denismakogon/emokognition
-version: 0.0.6
-format: http
+version: 0.0.7
+format: json
 path: /detect
 type: async
 timeout: 60

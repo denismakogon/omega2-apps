@@ -140,11 +140,11 @@ In order to make all this app work it is necessary to configure properly twitter
    it should look like:
    ```json
       {
-        "pg_host": "10.0.2.15",
-        "pg_port": "5432",
-        "pg_db": "emokognition",
-        "pg_user": "postgres",
-        "pg_pswd": "postgres"
+        "postgres_host": "10.0.2.15",
+        "postgres_port": "5432",
+        "postgres_db": "emokognition",
+        "postgres_user": "postgres",
+        "postgres_password": "postgres"
       }
    ```
  - `InitialTweetID`: tweet ID to start from, this one is very important because we don't want to start processing tweet from the very beginning

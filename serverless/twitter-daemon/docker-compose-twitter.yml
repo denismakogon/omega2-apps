@@ -1,0 +1,21 @@
+version: '3'
+services:
+  twitter-daemon:
+    build: .
+    environment:
+      - InitialTweetID=925300910162669567
+      - TwitterBotType=emokognition
+      # Fn client configuration
+      - FN_API_URL=${FN_API_URL}
+      - FN_TOKEN=${FN_TOKEN}
+      # PG configuration
+      - POSTGRES_HOST=${POSTGRES_HOST}
+      - POSTGRES_PORT=5432
+      - POSTGRES_DB=emokognition
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      # Twitter configuration
+      - CONSUMER_KEY=${TwitterConsumerKey}
+      - CONSUMER_SECRET=${TwitterConsumerSecret}
+      - API_KEY=${TwitterAccessToken}
+      - API_KEY_SECRET=${TwitterAccessTokenSecret}

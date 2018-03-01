@@ -17,7 +17,7 @@ recorder = "{0}/r/{1}/results".format(os.environ.get("FN_API_URL"), fn_app)
 
 async def build_view(context, data=None, loop=None):
     print("entering coroutine\n", file=sys.stderr, flush=True)
-    resp = requests.get(recorder)
+    resp = requests.get(recorder, timeout=200)
     resp.raise_for_status()
     print("stats received\n", file=sys.stderr, flush=True)
     data = resp.json()

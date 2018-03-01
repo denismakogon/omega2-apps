@@ -12,6 +12,7 @@ import (
 	"net/url"
 	"os"
 	"reflect"
+	"strings"
 	"time"
 )
 
@@ -65,9 +66,9 @@ func StructFromEnv(i interface{}) error {
 	for i := 0; i < v.NumField(); i++ {
 		fi := typ.Field(i)
 		if tagValue := fi.Tag.Get("json"); tagValue != "" {
-			value := os.Getenv(tagValue)
+			value := os.Getenv(strings.ToUpper(tagValue))
 			if value == "" {
-				return fmt.Errorf("Missing env var: %s", tagValue)
+				return fmt.Errorf("missing env var value: %s", strings.ToUpper(tagValue))
 			}
 			v.FieldByName(fi.Name).SetString(value)
 		}
@@ -143,6 +144,9 @@ func DoUncheckedRequest(payload *RequestPayload, req *http.Request, httpClient *
 
 func DoRequest(payload *RequestPayload, req *http.Request, httpClient *http.Client, fnToken string) error {
 	resp, err := DoUncheckedRequest(payload, req, httpClient, fnToken)
+	if err != nil {
+		return err
+	}
 	defer resp.Body.Close()
 	if resp.StatusCode == http.StatusAccepted || resp.StatusCode == http.StatusOK {
 		callID := new(CallID)
