@@ -1,0 +1,8 @@
+name: denismakogon/tweet-success
+version: 0.0.2
+format: json
+path: /detect
+type: async
+timeout: 60
+idle_timeout: 200
+memory: 512

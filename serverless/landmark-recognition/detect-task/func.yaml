@@ -1,0 +1,8 @@
+name: denismakogon/detect-task
+version: 0.0.5
+format: json
+path: /detect
+type: async
+timeout: 60
+idle_timeout: 200
+memory: 1024

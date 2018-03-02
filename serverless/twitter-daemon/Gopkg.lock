@@ -5,7 +5,7 @@
   branch = "master"
   name = "github.com/ChimeraCoder/anaconda"
   packages = ["."]
-  revision = "b2574bf45ceab73b763dc5e411b25d4ee046f1ac"
+  revision = "afe61d6d0d50297fe33f4fac4b007988ba9c575b"
 
 [[projects]]
   branch = "master"
@@ -28,8 +28,8 @@
 [[projects]]
   name = "github.com/asaskevich/govalidator"
   packages = ["."]
-  revision = "73945b6115bfbbcc57d89b7316e28109364124e1"
-  version = "v7"
+  revision = "521b25f4b05fd26bec69d9dedeb8f9c9a83939a8"
+  version = "v8"
 
 [[projects]]
   branch = "master"
@@ -51,27 +51,34 @@
 
 [[projects]]
   name = "github.com/fnproject/fn_go"
-  packages = ["client","client/apps","client/call","client/operations","client/routes","models"]
-  revision = "418dcd8e37593d86604e89a48d7ee2e109a1d3bf"
-  version = "0.2.0"
+  packages = [
+    "client",
+    "client/apps",
+    "client/call",
+    "client/operations",
+    "client/routes",
+    "models"
+  ]
+  revision = "1c5ec475d4536388b366b1f075945cd64d8c1cb4"
+  version = "0.2.4"
 
 [[projects]]
   branch = "master"
   name = "github.com/garyburd/go-oauth"
   packages = ["oauth"]
-  revision = "166ce8d672783fbb5a72247c3cf459267717e1ec"
+  revision = "4cff9ef7b7003713efa191899dbaab8fa75e3e73"
 
 [[projects]]
   branch = "master"
   name = "github.com/go-openapi/analysis"
   packages = ["."]
-  revision = "8ed83f2ea9f00f945516462951a288eaa68bf0d6"
+  revision = "f59a71f0ece6f9dfb438be7f45148f006cbad88e"
 
 [[projects]]
   branch = "master"
   name = "github.com/go-openapi/errors"
   packages = ["."]
-  revision = "03cfca65330da08a5a440053faf994a3c682b5bf"
+  revision = "7bcb96a367bac6b76e6e42fa84155bb5581dcff8"
 
 [[projects]]
   branch = "master"
@@ -89,73 +96,109 @@
   branch = "master"
   name = "github.com/go-openapi/loads"
   packages = ["."]
-  revision = "a80dea3052f00e5f032e860dd7355cd0cc67e24d"
+  revision = "2a2b323bab96e6b1fdee110e57d959322446e9c9"
 
 [[projects]]
   branch = "master"
   name = "github.com/go-openapi/runtime"
-  packages = [".","client"]
-  revision = "bf2ff8f7150788b1c7256abb0805ba0410cbbabb"
+  packages = [
+    ".",
+    "client",
+    "logger",
+    "middleware",
+    "middleware/denco",
+    "middleware/header",
+    "middleware/untyped",
+    "security"
+  ]
+  revision = "09fac855d8504674b22594470227bd94e5005025"
 
 [[projects]]
   branch = "master"
   name = "github.com/go-openapi/spec"
   packages = ["."]
-  revision = "7abd5745472fff5eb3685386d5fb8bf38683154d"
+  revision = "1de3e0542de65ad8d75452a595886fdd0befb363"
 
 [[projects]]
   branch = "master"
   name = "github.com/go-openapi/strfmt"
   packages = ["."]
-  revision = "610b6cacdcde6852f4de68998bd20ce1dac85b22"
+  revision = "6d1a47fad79c81e8cd732889cb80e91123951860"
 
 [[projects]]
   branch = "master"
   name = "github.com/go-openapi/swag"
   packages = ["."]
-  revision = "f3f9494671f93fcff853e3c6e9e948b3eb71e590"
+  revision = "0d03ad0b6405ada874d59d97c416b5cf4234e154"
 
 [[projects]]
   branch = "master"
   name = "github.com/go-openapi/validate"
   packages = ["."]
-  revision = "901ab082554d18fd6a99cc3a4bde6469e58d4cf6"
+  revision = "180bba53b98899f743a112e568bed9e2ef31aa20"
 
 [[projects]]
   branch = "master"
   name = "github.com/mailru/easyjson"
-  packages = ["buffer","jlexer","jwriter"]
-  revision = "2a92e673c9a6302dd05c3a691ae1f24aef46457d"
+  packages = [
+    "buffer",
+    "jlexer",
+    "jwriter"
+  ]
+  revision = "32fa128f234d041f196a9f3e0fea5ac9772c08e1"
 
 [[projects]]
   branch = "master"
   name = "github.com/mitchellh/mapstructure"
   packages = ["."]
-  revision = "d0303fe809921458f417bcf828397a65db30a7e4"
+  revision = "00c29f56e2386353d58c599509e8dc3801b0d716"
 
 [[projects]]
   branch = "master"
   name = "golang.org/x/net"
-  packages = ["context","context/ctxhttp","idna"]
-  revision = "8351a756f30f1297fe94bbf4b767ec589c6ea6d0"
+  packages = [
+    "context",
+    "context/ctxhttp",
+    "idna"
+  ]
+  revision = "22ae77b79946ea320088417e4d50825671d82d57"
 
 [[projects]]
-  branch = "master"
   name = "golang.org/x/text"
-  packages = ["collate","collate/build","internal/colltab","internal/gen","internal/tag","internal/triegen","internal/ucd","language","secure/bidirule","transform","unicode/bidi","unicode/cldr","unicode/norm","unicode/rangetable","width"]
-  revision = "1cbadb444a806fd9430d14ad08967ed91da4fa0a"
+  packages = [
+    "collate",
+    "collate/build",
+    "internal/colltab",
+    "internal/gen",
+    "internal/tag",
+    "internal/triegen",
+    "internal/ucd",
+    "language",
+    "secure/bidirule",
+    "transform",
+    "unicode/bidi",
+    "unicode/cldr",
+    "unicode/norm",
+    "unicode/rangetable",
+    "width"
+  ]
+  revision = "f21a4dfb5e38f5895301dc265a8def02365cc3d0"
+  version = "v0.3.0"
 
 [[projects]]
   branch = "v2"
   name = "gopkg.in/mgo.v2"
-  packages = ["bson","internal/json"]
+  packages = [
+    "bson",
+    "internal/json"
+  ]
   revision = "3f83fa5005286a7fe593b055f0d7771a7dce4655"
 
 [[projects]]
-  branch = "v2"
   name = "gopkg.in/yaml.v2"
   packages = ["."]
-  revision = "eb3733d160e74a9c7e442f435eb3bea458e1d19f"
+  revision = "7f97868eec74b32b0982dd158a51a446d1da7eb5"
+  version = "v2.1.1"
 
 [solve-meta]
   analyzer-name = "dep"

@@ -159,9 +159,9 @@ func DoRequest(payload *RequestPayload, req *http.Request, httpClient *http.Clie
 		apiError := new(ErrBody)
 		err = json.NewDecoder(resp.Body).Decode(&apiError)
 		if err != nil {
+			fmt.Printf("Error during detect func submittion. Call ID: %s\n. Error: %s", apiError.Error.Message, err.Error())
 			return err
 		}
-		fmt.Printf("Error during detect func submittion. Call ID: %s", apiError.Error.Message)
 	}
 	return nil
 }

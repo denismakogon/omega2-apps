@@ -4,7 +4,7 @@ services:
     build: .
     environment:
       - InitialTweetID=925300910162669567
-      - TwitterBotType=emokognition
+      - TwitterBotType=${TwitterBotType}
       # Fn client configuration
       - FN_API_URL=${FN_API_URL}
       - FN_TOKEN=${FN_TOKEN}
@@ -19,3 +19,14 @@ services:
       - CONSUMER_SECRET=${TwitterConsumerSecret}
       - API_KEY=${TwitterAccessToken}
       - API_KEY_SECRET=${TwitterAccessTokenSecret}
+      # GCloud console
+      - TYPE=${GCLOUD_ACCOUNT_TYPE}
+      - PROJECT_ID=${GCLOUD_PROJECT_ID}
+      - PRIVATE_KEY_ID=${GCLOUD_PRIVATE_KEY_ID}
+      - PRIVATE_KEY=${GCLOUD_PRIVATE_KEY}
+      - CLIENT_EMAIL=${GCLOUD_CLIENT_EMAIL}
+      - CLIENT_ID=${GCLOUD_CLIENT_ID}
+      - AUTH_URI=${GCLOUD_AUTH_URI}
+      - TOKEN_URI=${GCLOUD_TOKEN_URI}
+      - AUTH_PROVIDER_X509_CERT_URL=${GCLOUD_AUTH_PROVIDER_X509_CERT_URL}
+      - CLIENT_X509_CERT_URL=${GCLOUD_CLIENT_X509_CERT_URL}

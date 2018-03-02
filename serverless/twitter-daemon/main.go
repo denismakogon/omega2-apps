@@ -7,42 +7,42 @@ import (
 	"net/http"
 	"net/url"
 	"os"
-	//"sync"
-	//"time"
+	"sync"
+	"time"
 )
 
 func asyncRunner(omega *api.OnionOmega2, fnAPIURL, fnToken string, proc func(tweet anaconda.Tweet, httpClient *http.Client, fnAPIURL, fnToken string) error) {
-	//httpClient := api.SetupHTTPClient()
-	//
-	//tweetID := os.Getenv("InitialTweetID")
-	//if tweetID == "" {
-	//	panic("Initial tweet ID env var is not set, but suppose to be!")
-	//}
-	//omega.SetTweetIDToStartFrom(tweetID)
-	//wg := new(sync.WaitGroup)
-	//
-	//for {
-	//	tweets, err := omega.GetRecentMentions()
-	//	if err != nil {
-	//		fmt.Fprintln(os.Stderr, err.Error())
-	//		os.Exit(1)
-	//	}
-	//	if len(tweets) != 0 {
-	//		wg.Add(len(tweets))
-	//		for _, tweet := range tweets {
-	//			omega.PrintTweetInfo(tweet)
-	//			go func() {
-	//				defer wg.Done()
-	//				err = proc(tweet, httpClient, fnAPIURL, fnToken)
-	//				if err != nil {
-	//					fmt.Fprintln(os.Stderr, err.Error())
-	//					os.Exit(1)
-	//				}
-	//			}()
-	//		}
-	//	}
-	//	time.Sleep(time.Second * 6)
-	//}
+	httpClient := api.SetupHTTPClient()
+
+	tweetID := os.Getenv("InitialTweetID")
+	if tweetID == "" {
+		panic("Initial tweet ID env var is not set, but suppose to be!")
+	}
+	omega.SetTweetIDToStartFrom(tweetID)
+	wg := new(sync.WaitGroup)
+
+	for {
+		tweets, err := omega.GetRecentMentions()
+		if err != nil {
+			fmt.Fprintln(os.Stderr, err.Error())
+			os.Exit(1)
+		}
+		if len(tweets) != 0 {
+			wg.Add(len(tweets))
+			for _, tweet := range tweets {
+				omega.PrintTweetInfo(tweet)
+				go func() {
+					defer wg.Done()
+					err = proc(tweet, httpClient, fnAPIURL, fnToken)
+					if err != nil {
+						fmt.Fprintln(os.Stderr, err.Error())
+						os.Exit(1)
+					}
+				}()
+			}
+		}
+		time.Sleep(time.Second * 6)
+	}
 }
 
 func EmotionRecognition() error {
@@ -76,15 +76,14 @@ func EmotionRecognition() error {
 }
 
 func LandmarkRecognition() error {
-
 	twitter := new(api.TwitterSecret)
-	twitterAPI, err := twitter.FromFile()
+	twitterAPI, err := twitter.FromEnv()
 	if err != nil {
 		return err
 	}
 
 	gc := new(api.GCloudSecret)
-	err = gc.FromFile()
+	err = gc.FromEnv()
 	if err != nil {
 		return err
 	}

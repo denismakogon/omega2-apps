@@ -27,7 +27,7 @@ type ErrBody struct {
 	Error ErrMessage `json:"error"`
 }
 
-func recreateRoute(ctx context.Context, fnclient *client.Fn, appName, image, routePath, routeType, fformat string, timeout, idleTimeout int32, memory uint64) error {
+func recreateRoute(ctx context.Context, fnclient *client.Fn, appName, image, routePath, routeType, fformat, cpus string, timeout, idleTimeout int32, memory uint64) error {
 	cfg := &routes.PostAppsAppRoutesParams{
 		App: appName,
 		Body: &models.RouteWrapper{
@@ -39,6 +39,7 @@ func recreateRoute(ctx context.Context, fnclient *client.Fn, appName, image, rou
 				Memory:      memory,
 				Format:      fformat,
 				IDLETimeout: &idleTimeout,
+				Cpus:        cpus,
 			},
 		},
 		Context: ctx,
@@ -118,6 +119,7 @@ func setupEmokognitionAppAndRoutes(fnAPIURL string, fnclient *client.Fn, twitter
 		"/recorder",
 		"async",
 		"http",
+		"500.000",
 		120, 120, uint64(256))
 	if err != nil {
 		return errors.New(err.Error())
@@ -127,6 +129,7 @@ func setupEmokognitionAppAndRoutes(fnAPIURL string, fnclient *client.Fn, twitter
 		"/results",
 		"sync",
 		"http",
+		"1000.000",
 		120, 120, uint64(512))
 	if err != nil {
 		return errors.New(err.Error())
@@ -134,9 +137,10 @@ func setupEmokognitionAppAndRoutes(fnAPIURL string, fnclient *client.Fn, twitter
 	err = recreateRoute(ctx, fnclient, app,
 		"denismakogon/emokognition:0.0.7",
 		"/detect",
-		"sync",
+		"async",
 		"json",
-		120, 200, uint64(1536))
+		"1024.000",
+		3600, 200, uint64(1500))
 	if err != nil {
 		return errors.New(err.Error())
 	}
@@ -145,6 +149,7 @@ func setupEmokognitionAppAndRoutes(fnAPIURL string, fnclient *client.Fn, twitter
 		"/index.html",
 		"sync",
 		"http",
+		"500.000",
 		120, 200, uint64(512))
 	if err != nil {
 		return errors.New(err.Error())
@@ -154,7 +159,7 @@ func setupEmokognitionAppAndRoutes(fnAPIURL string, fnclient *client.Fn, twitter
 }
 
 func setupLandmarkAppAndRoutes(fnclient *client.Fn, gcloud *GCloudSecret, twitterSecret *TwitterSecret) error {
-	app := "where-is-it"
+	app := "landmark"
 	ctx, cancel := context.WithTimeout(context.Background(), 300*time.Second)
 	defer cancel()
 
@@ -177,7 +182,8 @@ func setupLandmarkAppAndRoutes(fnclient *client.Fn, gcloud *GCloudSecret, twitte
 		"denismakogon/tweet-fail:0.0.2",
 		"/tweet-fail",
 		"async",
-		"default",
+		"json",
+		"0.000",
 		60, 120, uint64(256))
 	if err != nil {
 		return errors.New(err.Error())
@@ -186,8 +192,9 @@ func setupLandmarkAppAndRoutes(fnclient *client.Fn, gcloud *GCloudSecret, twitte
 		"denismakogon/detect-task:0.0.5",
 		"/detect-where",
 		"async",
-		"default",
-		60, 120, uint64(256))
+		"json",
+		"256.000",
+		120, 120, uint64(512))
 	if err != nil {
 		return errors.New(err.Error())
 	}
@@ -195,7 +202,8 @@ func setupLandmarkAppAndRoutes(fnclient *client.Fn, gcloud *GCloudSecret, twitte
 		"denismakogon/tweet-success:0.0.2",
 		"/tweet-success",
 		"async",
-		"default",
+		"json",
+		"0.000",
 		60, 120, uint64(256))
 	if err != nil {
 		return errors.New(err.Error())

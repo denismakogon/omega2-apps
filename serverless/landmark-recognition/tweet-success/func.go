@@ -1,16 +1,23 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"github.com/denismakogon/omega2-apps/serverless/twitter-daemon/api"
+	"github.com/fnproject/fdk-go"
+	"io"
 	"net/url"
 	"os"
 )
 
 func main() {
+	fdk.Handle(fdk.HandlerFunc(myHandler))
+}
+
+func myHandler(ctx context.Context, in io.Reader, out io.Writer) {
 	r := new(api.RequestPayload)
-	err := json.NewDecoder(os.Stdin).Decode(r)
+	err := json.NewDecoder(in).Decode(r)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "unable to decode STDIN, got error %v", err.Error())
 		return
