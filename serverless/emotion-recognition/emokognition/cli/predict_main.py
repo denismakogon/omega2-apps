@@ -33,12 +33,7 @@ network.build_network()
 network.load_model_from_external_file("/code/cli/face_recognition_model")
 
 
-@fdk.coerce_input_to_content_type
 def handler(context, data=None, loop=None):
-    # NOTE: this really depends on content type,
-    # i assume here that request body can be:
-    # - plain/text
-    # - application/json
     if isinstance(data, str):
         data = json.loads(data)
     if isinstance(data, dict):
@@ -77,17 +72,14 @@ def handler(context, data=None, loop=None):
           .format(main_emotion, alt_emotion), file=sys.stderr, flush=True)
     fn_app = os.environ.get("FN_APP_NAME")
     recorder = "{}/r/{}/recorder".format(os.environ.get("FN_API_URL"), fn_app)
-    try:
-        print("attempting to send prediction results "
-              "to the next function", file=sys.stderr, flush=True)
-        requests.post(recorder, json={
-            "alt_emotion": alt_emotion,
-            "main_emotion": main_emotion,
-        })
-        return "OK"
-    except Exception as ex:
-        print(str(ex), file=sys.stderr, flush=True)
-        raise ex
+    print("attempting to send prediction results "
+          "to the next function", file=sys.stderr, flush=True)
+    requests.post(recorder, json={
+        "alt_emotion": alt_emotion,
+        "main_emotion": main_emotion,
+    })
+
+    return "OK"
 
 
 if __name__ == "__main__":

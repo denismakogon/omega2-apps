@@ -105,7 +105,7 @@ func ToMap(in interface{}) (map[string]interface{}, error) {
 	for i := 0; i < v.NumField(); i++ {
 		fi := typ.Field(i)
 		if tagValue := fi.Tag.Get("json"); tagValue != "" {
-			out[tagValue] = v.Field(i).String()
+			out[strings.ToUpper(tagValue)] = v.Field(i).String()
 		}
 	}
 	return out, nil

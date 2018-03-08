@@ -1,11 +1,25 @@
+# All Rights Reserved.
+#
+#    Licensed under the Apache License, Version 2.0 (the "License"); you may
+#    not use this file except in compliance with the License. You may obtain
+#    a copy of the License at
+#
+#         http://www.apache.org/licenses/LICENSE-2.0
+#
+#    Unless required by applicable law or agreed to in writing, software
+#    distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+#    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+#    License for the specific language governing permissions and limitations
+#    under the License.
+
 import jinja2
 import requests
 import os
 import sys
-import asyncio
 
 import fdk
-from fdk.http import response
+
+from fdk import response
 
 loader = jinja2.FileSystemLoader('./index.html')
 env = jinja2.Environment(loader=loader)
@@ -15,8 +29,8 @@ fn_app = os.environ.get("FN_APP_NAME")
 recorder = "{0}/r/{1}/results".format(os.environ.get("FN_API_URL"), fn_app)
 
 
-async def build_view(context, data=None, loop=None):
-    print("entering coroutine\n", file=sys.stderr, flush=True)
+def build_view(context, data=None, loop=None):
+    print("entering the function \n", file=sys.stderr, flush=True)
     resp = requests.get(recorder, timeout=200)
     resp.raise_for_status()
     print("stats received\n", file=sys.stderr, flush=True)
@@ -43,7 +57,7 @@ async def build_view(context, data=None, loop=None):
         "Content-Type": "text/html",
     }
     return response.RawResponse(
-        http_proto_version=context.version,
+        context,
         status_code=200,
         headers=headers,
         response_data=template.render(render_context)
@@ -51,5 +65,4 @@ async def build_view(context, data=None, loop=None):
 
 
 if __name__ == "__main__":
-    loop = asyncio.get_event_loop()
-    fdk.handle(build_view, loop=loop)
+    fdk.handle(build_view)

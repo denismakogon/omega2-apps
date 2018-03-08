@@ -1,15 +1,23 @@
-import asyncio
-import collections
+# All Rights Reserved.
+#
+#    Licensed under the Apache License, Version 2.0 (the "License"); you may
+#    not use this file except in compliance with the License. You may obtain
+#    a copy of the License at
+#
+#         http://www.apache.org/licenses/LICENSE-2.0
+#
+#    Unless required by applicable law or agreed to in writing, software
+#    distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+#    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+#    License for the specific language governing permissions and limitations
+#    under the License.
 
-import json
 import os
 import sys
-
-import aiopg
-
+import psycopg2
+import collections
+import json
 import fdk
-
-from fdk.http import response
 
 
 CREATE = ("CREATE TABLE IF NOT EXISTS emotions ("
@@ -28,55 +36,45 @@ ALT_SELECT = {
 }
 
 
-async def select_votes(context, data=None, loop=None):
-    print("Entering coroutine\n", file=sys.stderr, flush=True)
-    pg_host = os.environ.get('pg_host')
-    pg_port = os.environ.get('pg_port')
-    pg_db = os.environ.get('pg_db')
-    pg_user = os.environ.get('pg_user')
-    pg_pswd = os.environ.get('pg_pswd')
+def select_votes(context, data=None, loop=None):
+    print("entering function\n", file=sys.stderr, flush=True)
+    pg_host = os.environ.get('postgres_host'.upper())
+    pg_port = os.environ.get('postgres_port'.upper())
+    pg_db = os.environ.get('postgres_db'.upper())
+    pg_user = os.environ.get('postgres_user'.upper())
+    pg_pswd = os.environ.get('postgres_password'.upper())
     pg_dns = (
         'dbname={database} '
         'user={user} '
         'password={passwd} '
         'host={host} '
         'port={port}'
-        .format(host=pg_host, 
-                database=pg_db, 
-                user=pg_user, 
+        .format(host=pg_host,
+                database=pg_db,
+                user=pg_user,
                 passwd=pg_pswd,
                 port=pg_port)
     )
-    print("Establishing connection\n", file=sys.stderr, flush=True)
     final = {}
-    try:
-        async with aiopg.create_pool(pg_dns) as pool:
-            print("pool created\n", file=sys.stderr, flush=True)
-            async with pool.acquire() as conn:
-                print("connection acquired\n", file=sys.stderr, flush=True)
-                async with conn.cursor() as cur:
-                    print("cursor created\n", file=sys.stderr, flush=True)
-                    await cur.execute(CREATE)
-                    for o in [MAIN_SELECT, ALT_SELECT]:
-                        await cur.execute(o["q"])
-                        print("cursor awaited\n", file=sys.stderr, flush=True)
-                        result = collections.defaultdict(int)
-                        async for row in cur:
-                            emotion, count = row
-                            result[emotion] = count
-                        full_result = dict(result)
-                        final[o["name"]] = full_result
-                print("stats created\n", file=sys.stderr, flush=True)
-    except Exception as ex:
-        return response.RawResponse(context.version, status_code=500, headers={
-            "Content-Type": "text/plain; charset=utf-8",
-        }, response_data=str(ex))
+    print("establishing connection\n", file=sys.stderr, flush=True)
+    conn = psycopg2.connect(pg_dns)
+    print("connection acquired\n", file=sys.stderr, flush=True)
+    cur = conn.cursor()
+    print("cursor created\n", file=sys.stderr, flush=True)
+    cur.execute(CREATE)
+    for o in [MAIN_SELECT, ALT_SELECT]:
+        cur.execute(o["q"])
+        result = collections.defaultdict(int)
+        rows = cur.fetchall()
+        for row in rows:
+            emotion, count = row
+            result[emotion] = count
 
-    return response.RawResponse(context.version, status_code=200, headers={
-        "Content-Type": "application/json; charset=utf-8",
-    }, response_data=json.dumps(final))
+        full_result = dict(result)
+        final[o["name"]] = full_result
+    print("stats created\n", file=sys.stderr, flush=True)
+    return json.dumps(final)
 
 
 if __name__ == "__main__":
-    loop = asyncio.get_event_loop()
-    fdk.handle(select_votes, loop=loop)
+    fdk.handle(select_votes)

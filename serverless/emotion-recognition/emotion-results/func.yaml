@@ -1,6 +1,6 @@
 name: denismakogon/emotion-results
-version: 0.0.7
-format: http
+version: 0.0.8
+format: json
 path: /results
 type: sync
 timeout: 60

@@ -94,7 +94,7 @@ func redeployFnApp(ctx context.Context, fnclient *client.Fn, app string, config 
 	return err
 }
 
-func setupEmokognitionAppAndRoutes(fnAPIURL string, fnclient *client.Fn, twitterSecret *TwitterSecret, pgConfig *PostgresConfig) error {
+func setupEmokognitionAppAndRoutes(fnclient *client.Fn, twitterSecret *TwitterSecret, pgConfig *PostgresConfig) error {
 	app := "emokognition"
 	ctx, cancel := context.WithTimeout(context.Background(), 300*time.Second)
 	defer cancel()
@@ -108,7 +108,8 @@ func setupEmokognitionAppAndRoutes(fnAPIURL string, fnclient *client.Fn, twitter
 	if err != nil {
 		return err
 	}
-	config["FN_API_URL"] = fnAPIURL
+
+	config["FN_API_URL"] = os.Getenv("INTERNAL_FN_API_URL")
 
 	err = redeployFnApp(ctx, fnclient, app, config)
 	if err != nil {
@@ -119,37 +120,37 @@ func setupEmokognitionAppAndRoutes(fnAPIURL string, fnclient *client.Fn, twitter
 		"/recorder",
 		"async",
 		"http",
-		"500.000",
+		"",
 		120, 120, uint64(256))
 	if err != nil {
 		return errors.New(err.Error())
 	}
 	err = recreateRoute(ctx, fnclient, app,
-		"denismakogon/emotion-results:0.0.7",
+		"denismakogon/emotion-results:0.0.8",
 		"/results",
 		"sync",
-		"http",
-		"1000.000",
+		"json",
+		"",
 		120, 120, uint64(512))
 	if err != nil {
 		return errors.New(err.Error())
 	}
 	err = recreateRoute(ctx, fnclient, app,
-		"denismakogon/emokognition:0.0.7",
+		"denismakogon/emokognition:0.0.8",
 		"/detect",
 		"async",
 		"json",
-		"1024.000",
-		3600, 200, uint64(1500))
+		"2000m",
+		600, 200, uint64(1024))
 	if err != nil {
 		return errors.New(err.Error())
 	}
 	err = recreateRoute(ctx, fnclient, app,
-		"denismakogon/emokognition-view:0.0.12",
+		"denismakogon/emokognition-view:0.0.13",
 		"/index.html",
 		"sync",
-		"http",
-		"500.000",
+		"json",
+		"",
 		120, 200, uint64(512))
 	if err != nil {
 		return errors.New(err.Error())
@@ -183,7 +184,7 @@ func setupLandmarkAppAndRoutes(fnclient *client.Fn, gcloud *GCloudSecret, twitte
 		"/tweet-fail",
 		"async",
 		"json",
-		"0.000",
+		"",
 		60, 120, uint64(256))
 	if err != nil {
 		return errors.New(err.Error())
@@ -193,7 +194,7 @@ func setupLandmarkAppAndRoutes(fnclient *client.Fn, gcloud *GCloudSecret, twitte
 		"/detect-where",
 		"async",
 		"json",
-		"256.000",
+		"2000m",
 		120, 120, uint64(512))
 	if err != nil {
 		return errors.New(err.Error())
@@ -203,7 +204,7 @@ func setupLandmarkAppAndRoutes(fnclient *client.Fn, gcloud *GCloudSecret, twitte
 		"/tweet-success",
 		"async",
 		"json",
-		"0.000",
+		"",
 		60, 120, uint64(256))
 	if err != nil {
 		return errors.New(err.Error())
@@ -237,7 +238,7 @@ func SetupEmoKognitionFunctions(twitterSecret *TwitterSecret, pgConfig *Postgres
 	if err != nil {
 		return "", "", err
 	}
-	err = setupEmokognitionAppAndRoutes(fnAPIURL, fnclient, twitterSecret, pgConfig)
+	err = setupEmokognitionAppAndRoutes(fnclient, twitterSecret, pgConfig)
 	if err != nil {
 		return "", "", err
 	}
