@@ -28,6 +28,7 @@ type RequestPayload struct {
 	MainEmotion     string `json:"main_emotion,omitempty"`
 	AltEmotion      string `json:"alt_emotion,omitempty"`
 	Landmark        string `json:"landmark,omitempty"`
+	MediaContent    string `json:"media_content,omitempty"`
 }
 
 type OnionOmega2 struct {

@@ -27,7 +27,7 @@ type ErrBody struct {
 	Error ErrMessage `json:"error"`
 }
 
-func recreateRoute(ctx context.Context, fnclient *client.Fn, appName, image, routePath, routeType, fformat, cpus string, timeout, idleTimeout int32, memory uint64) error {
+func RecreateRoute(ctx context.Context, fnclient *client.Fn, appName, image, routePath, routeType, fformat, cpus string, timeout, idleTimeout int32, memory uint64) error {
 	cfg := &routes.PostAppsAppRoutesParams{
 		App: appName,
 		Body: &models.RouteWrapper{
@@ -51,7 +51,7 @@ func recreateRoute(ctx context.Context, fnclient *client.Fn, appName, image, rou
 	return nil
 }
 
-func redeployFnApp(ctx context.Context, fnclient *client.Fn, app string, config map[string]string) error {
+func RedeployFnApp(ctx context.Context, fnclient *client.Fn, app string, config map[string]string) error {
 	_, err := fnclient.Apps.GetAppsApp(&apps.GetAppsAppParams{
 		App:     app,
 		Context: ctx,
@@ -111,11 +111,11 @@ func setupEmokognitionAppAndRoutes(fnclient *client.Fn, twitterSecret *TwitterSe
 
 	config["FN_API_URL"] = os.Getenv("INTERNAL_FN_API_URL")
 
-	err = redeployFnApp(ctx, fnclient, app, config)
+	err = RedeployFnApp(ctx, fnclient, app, config)
 	if err != nil {
 		return err
 	}
-	err = recreateRoute(ctx, fnclient, app,
+	err = RecreateRoute(ctx, fnclient, app,
 		"denismakogon/emotion-recorder:0.0.11",
 		"/recorder",
 		"async",
@@ -125,7 +125,7 @@ func setupEmokognitionAppAndRoutes(fnclient *client.Fn, twitterSecret *TwitterSe
 	if err != nil {
 		return errors.New(err.Error())
 	}
-	err = recreateRoute(ctx, fnclient, app,
+	err = RecreateRoute(ctx, fnclient, app,
 		"denismakogon/emotion-results:0.0.8",
 		"/results",
 		"sync",
@@ -135,7 +135,7 @@ func setupEmokognitionAppAndRoutes(fnclient *client.Fn, twitterSecret *TwitterSe
 	if err != nil {
 		return errors.New(err.Error())
 	}
-	err = recreateRoute(ctx, fnclient, app,
+	err = RecreateRoute(ctx, fnclient, app,
 		"denismakogon/emokognition:0.0.8",
 		"/detect",
 		"async",
@@ -145,7 +145,7 @@ func setupEmokognitionAppAndRoutes(fnclient *client.Fn, twitterSecret *TwitterSe
 	if err != nil {
 		return errors.New(err.Error())
 	}
-	err = recreateRoute(ctx, fnclient, app,
+	err = RecreateRoute(ctx, fnclient, app,
 		"denismakogon/emokognition-view:0.0.13",
 		"/index.html",
 		"sync",
@@ -174,12 +174,12 @@ func setupLandmarkAppAndRoutes(fnclient *client.Fn, gcloud *GCloudSecret, twitte
 		return err
 	}
 
-	err = redeployFnApp(ctx, fnclient, app, config)
+	err = RedeployFnApp(ctx, fnclient, app, config)
 	if err != nil {
 		return err
 	}
 
-	err = recreateRoute(ctx, fnclient, app,
+	err = RecreateRoute(ctx, fnclient, app,
 		"denismakogon/tweet-fail:0.0.2",
 		"/tweet-fail",
 		"async",
@@ -189,7 +189,7 @@ func setupLandmarkAppAndRoutes(fnclient *client.Fn, gcloud *GCloudSecret, twitte
 	if err != nil {
 		return errors.New(err.Error())
 	}
-	err = recreateRoute(ctx, fnclient, app,
+	err = RecreateRoute(ctx, fnclient, app,
 		"denismakogon/detect-task:0.0.5",
 		"/detect-where",
 		"async",
@@ -199,7 +199,7 @@ func setupLandmarkAppAndRoutes(fnclient *client.Fn, gcloud *GCloudSecret, twitte
 	if err != nil {
 		return errors.New(err.Error())
 	}
-	err = recreateRoute(ctx, fnclient, app,
+	err = RecreateRoute(ctx, fnclient, app,
 		"denismakogon/tweet-success:0.0.2",
 		"/tweet-success",
 		"async",
@@ -212,7 +212,7 @@ func setupLandmarkAppAndRoutes(fnclient *client.Fn, gcloud *GCloudSecret, twitte
 	return nil
 }
 
-func setupFNClient() (string, string, *client.Fn, error) {
+func SetupFNClient() (string, string, *client.Fn, error) {
 	fnAPIURL := os.Getenv("FN_API_URL")
 	fmt.Fprintln(os.Stderr, "Fn API URL: ", fnAPIURL)
 	if fnAPIURL == "" {
@@ -234,7 +234,7 @@ func setupFNClient() (string, string, *client.Fn, error) {
 }
 
 func SetupEmoKognitionFunctions(twitterSecret *TwitterSecret, pgConfig *PostgresConfig) (string, string, error) {
-	fnAPIURL, fnToken, fnclient, err := setupFNClient()
+	fnAPIURL, fnToken, fnclient, err := SetupFNClient()
 	if err != nil {
 		return "", "", err
 	}
@@ -246,7 +246,7 @@ func SetupEmoKognitionFunctions(twitterSecret *TwitterSecret, pgConfig *Postgres
 }
 
 func SetupLandmarkRecognitionFunctions(gc *GCloudSecret, twitterSecret *TwitterSecret) (string, string, error) {
-	fnAPIURL, fnToken, fnclient, err := setupFNClient()
+	fnAPIURL, fnToken, fnclient, err := SetupFNClient()
 	if err != nil {
 		return "", "", err
 	}
