@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/ChimeraCoder/anaconda"
-	"github.com/denismakogon/omega2-apps/serverless/twitter-daemon/api"
+	"github.com/denismakogon/omega2-apps/serverless/common"
 	"net/http"
 	"net/url"
 	"os"
@@ -11,8 +11,8 @@ import (
 	"time"
 )
 
-func asyncRunner(omega *api.OnionOmega2, fnAPIURL, fnToken string, proc func(tweet anaconda.Tweet, httpClient *http.Client, fnAPIURL, fnToken string) error) {
-	httpClient := api.SetupHTTPClient()
+func asyncRunner(omega *common.OnionOmega2, fnAPIURL, fnToken string, proc func(tweet anaconda.Tweet, httpClient *http.Client, fnAPIURL, fnToken string) error) {
+	httpClient := common.SetupHTTPClient()
 
 	tweetID := os.Getenv("InitialTweetID")
 	if tweetID == "" {
@@ -46,19 +46,19 @@ func asyncRunner(omega *api.OnionOmega2, fnAPIURL, fnToken string, proc func(twe
 }
 
 func EmotionRecognition() error {
-	pgConf := new(api.PostgresConfig)
+	pgConf := new(common.PostgresConfig)
 	err := pgConf.FromEnv()
 	if err != nil {
 		return err
 	}
 
-	twitter := new(api.TwitterSecret)
+	twitter := new(common.TwitterSecret)
 	twitterAPI, err := twitter.FromEnv()
 	if err != nil {
 		return err
 	}
 
-	fnAPIURL, fnToken, err := api.SetupEmoKognitionFunctions(twitter, pgConf)
+	fnAPIURL, fnToken, err := common.SetupEmoKognitionFunctions(twitter, pgConf)
 	if err != nil {
 		return err
 	}
@@ -67,28 +67,28 @@ func EmotionRecognition() error {
 	v := url.Values{}
 	v.Set("count", "200")
 
-	omega := api.OnionOmega2{
+	omega := common.OnionOmega2{
 		TwitterAPI:   twitterAPI,
 		SearchValues: &v,
 	}
-	asyncRunner(&omega, fnAPIURL, fnToken, api.ProcessTweetWithEmotion)
+	asyncRunner(&omega, fnAPIURL, fnToken, common.ProcessTweetWithEmotion)
 	return nil
 }
 
 func LandmarkRecognition() error {
-	twitter := new(api.TwitterSecret)
+	twitter := new(common.TwitterSecret)
 	twitterAPI, err := twitter.FromEnv()
 	if err != nil {
 		return err
 	}
 
-	gc := new(api.GCloudSecret)
+	gc := new(common.GCloudSecret)
 	err = gc.FromEnv()
 	if err != nil {
 		return err
 	}
 
-	fnAPIURL, fnToken, err := api.SetupLandmarkRecognitionFunctions(gc, twitter)
+	fnAPIURL, fnToken, err := common.SetupLandmarkRecognitionFunctions(gc, twitter)
 	if err != nil {
 		return err
 	}
@@ -97,12 +97,12 @@ func LandmarkRecognition() error {
 	v := url.Values{}
 	v.Set("count", "200")
 
-	omega := api.OnionOmega2{
+	omega := common.OnionOmega2{
 		TwitterAPI:   twitterAPI,
 		SearchValues: &v,
 		GCloudAuth:   gc,
 	}
-	asyncRunner(&omega, fnAPIURL, fnToken, api.ProcessTweetWithLandmark)
+	asyncRunner(&omega, fnAPIURL, fnToken, common.ProcessTweetWithLandmark)
 	return nil
 }
 

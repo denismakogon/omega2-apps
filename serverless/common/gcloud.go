@@ -1,4 +1,4 @@
-package api
+package common
 
 type GCloudSecret struct {
 	Type                    string `json:"type"`

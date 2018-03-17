@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"flag"
 	"fmt"
 	"github.com/denismakogon/omega2-apps/serverless/minio-pollster/api"
 	"net/url"
@@ -9,9 +10,21 @@ import (
 	"sync"
 )
 
+func withDefault(key, defaultValue string) string {
+	v := os.Getenv(key)
+	if v == "" {
+		return defaultValue
+	}
+	return v
+}
+
 func start() error {
+	minioURL := withDefault("MINIO_URL", "s3://admin:password@localhost:9000/us-east-1/emotions")
+	minioURL = *flag.String("s3-url", minioURL, "S3 API-compatible (minio, swift, etc.) store URL")
+
+	flag.Parse()
+
 	ctx := context.Background()
-	minioURL := os.Getenv("MINIO_URL")
 	u, err := url.Parse(minioURL)
 	if err != nil {
 		return err
@@ -23,8 +36,7 @@ func start() error {
 	}
 
 	var wg sync.WaitGroup
-	err = minio.DispatchObjects(ctx, wg, "emokognition-v2")
-	return err
+	return minio.DispatchObjects(ctx, wg, "emokognition-v2")
 }
 
 func main() {

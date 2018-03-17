@@ -14,7 +14,6 @@
 
 import cv2
 import numpy as np
-import ssl
 import sys
 import os
 import requests
@@ -22,7 +21,6 @@ import json
 
 import fdk
 
-from urllib import request
 from emotions import constants
 from emotions import recognition
 from emotions import utils

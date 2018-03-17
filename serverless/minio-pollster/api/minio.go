@@ -10,7 +10,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
-	"github.com/denismakogon/omega2-apps/serverless/twitter-daemon/api"
+	"github.com/denismakogon/omega2-apps/serverless/common"
 	"github.com/sirupsen/logrus"
 	"net/http"
 	"net/url"
@@ -94,6 +94,7 @@ func (s *store) asyncDispatcher(ctx context.Context, wg sync.WaitGroup, input *s
 		return err
 	}
 
+	fmt.Fprintln(os.Stderr, "Found object: ", len(result.Contents))
 	if len(result.Contents) > 0 {
 		wg.Add(len(result.Contents))
 		for _, object := range result.Contents {
@@ -102,7 +103,7 @@ func (s *store) asyncDispatcher(ctx context.Context, wg sync.WaitGroup, input *s
 				defer wg.Done()
 
 				target := &aws.WriteAtBuffer{}
-
+				fmt.Fprintln(os.Stderr, "Pulling the content of the object: ", s.bucket+"/"+*object.Key)
 				size, err := s.downloader.DownloadWithContext(ctx, target, &s3.GetObjectInput{
 					Bucket: aws.String(s.bucket),
 					Key:    object.Key,
@@ -111,14 +112,14 @@ func (s *store) asyncDispatcher(ctx context.Context, wg sync.WaitGroup, input *s
 					fmt.Fprintln(os.Stderr, err.Error())
 					os.Exit(1)
 				}
-				req.Header.Set("Content-Length", strconv.FormatInt(size, 10))
 
-				payload := &api.RequestPayload{MediaContent: string(target.Bytes())}
-				err = api.DoRequest(payload, req, httpClient, fnToken)
-				if err != nil {
-					fmt.Fprintln(os.Stderr, err.Error())
-					os.Exit(1)
-				}
+				req.Header.Set("Content-Length", strconv.FormatInt(size, 10))
+				//payload := &api.RequestPayload{MediaContent: string(target.Bytes())}
+				//err = api.DoRequest(payload, req, httpClient, fnToken)
+				//if err != nil {
+				//	fmt.Fprintln(os.Stderr, err.Error())
+				//	os.Exit(1)
+				//}
 
 			}(wg, object)
 		}
@@ -141,14 +142,15 @@ func (s *store) DispatchObjects(ctx context.Context, wg sync.WaitGroup, appName 
 	}
 
 	detect, err := http.NewRequest(
-		http.MethodPost, fmt.Sprintf("%s/r/%s/detect", fnAPIURL, appName),
+		http.MethodPost, fmt.Sprintf("%s/r/%s/detect-v2", fnAPIURL, appName),
 		nil)
 	if err != nil {
 		return err
 	}
-	httpClient := api.SetupHTTPClient()
+	httpClient := common.SetupHTTPClient()
 
 	for {
+
 		err = s.asyncDispatcher(ctx, wg, input, detect, httpClient, fnToken)
 		if err != nil {
 			return err

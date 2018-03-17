@@ -32,52 +32,10 @@
   version = "v9"
 
 [[projects]]
-  name = "github.com/aws/aws-sdk-go"
-  packages = [
-    "aws",
-    "aws/awserr",
-    "aws/awsutil",
-    "aws/client",
-    "aws/client/metadata",
-    "aws/corehandlers",
-    "aws/credentials",
-    "aws/credentials/ec2rolecreds",
-    "aws/credentials/endpointcreds",
-    "aws/credentials/stscreds",
-    "aws/defaults",
-    "aws/ec2metadata",
-    "aws/endpoints",
-    "aws/request",
-    "aws/session",
-    "aws/signer/v4",
-    "internal/sdkio",
-    "internal/sdkrand",
-    "internal/shareddefaults",
-    "private/protocol",
-    "private/protocol/query",
-    "private/protocol/query/queryutil",
-    "private/protocol/rest",
-    "private/protocol/restxml",
-    "private/protocol/xml/xmlutil",
-    "service/s3",
-    "service/s3/s3iface",
-    "service/s3/s3manager",
-    "service/sts"
-  ]
-  revision = "62465d4996f172ae426fdcec7a6a053062cf8995"
-  version = "v1.13.15"
-
-[[projects]]
   branch = "master"
   name = "github.com/azr/backoff"
   packages = ["."]
   revision = "53511d3c733003985b0b76f733df1f4d0095ee6a"
-
-[[projects]]
-  branch = "master"
-  name = "github.com/denismakogon/omega2-apps"
-  packages = ["serverless/twitter-daemon/api"]
-  revision = "0b6a5d66f934ad92da610fdc55dc633d019df269"
 
 [[projects]]
   branch = "master"
@@ -109,12 +67,6 @@
   name = "github.com/garyburd/go-oauth"
   packages = ["oauth"]
   revision = "4cff9ef7b7003713efa191899dbaab8fa75e3e73"
-
-[[projects]]
-  name = "github.com/go-ini/ini"
-  packages = ["."]
-  revision = "6333e38ac20b8949a8dd68baa3650f4dee8f39f0"
-  version = "v1.33.0"
 
 [[projects]]
   branch = "master"
@@ -186,11 +138,6 @@
   revision = "180bba53b98899f743a112e568bed9e2ef31aa20"
 
 [[projects]]
-  name = "github.com/jmespath/go-jmespath"
-  packages = ["."]
-  revision = "0b12d6b5"
-
-[[projects]]
   branch = "master"
   name = "github.com/mailru/easyjson"
   packages = [
@@ -207,18 +154,6 @@
   revision = "00c29f56e2386353d58c599509e8dc3801b0d716"
 
 [[projects]]
-  name = "github.com/sirupsen/logrus"
-  packages = ["."]
-  revision = "c155da19408a8799da419ed3eeb0cb5db0ad5dbc"
-  version = "v1.0.5"
-
-[[projects]]
-  branch = "master"
-  name = "golang.org/x/crypto"
-  packages = ["ssh/terminal"]
-  revision = "b4956d363a8b14623cc81db401707679605930a3"
-
-[[projects]]
   branch = "master"
   name = "golang.org/x/net"
   packages = [
@@ -227,15 +162,6 @@
     "idna"
   ]
   revision = "e0c57d8f86c17f0724497efcb3bc617e82834821"
-
-[[projects]]
-  branch = "master"
-  name = "golang.org/x/sys"
-  packages = [
-    "unix",
-    "windows"
-  ]
-  revision = "cc7307a45468e49eaf2997c890f14aa03a26917b"
 
 [[projects]]
   name = "golang.org/x/text"
@@ -277,6 +203,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "90e1e9785ffff8958c64f22d06380d9b1e74d7659df5060181036a2191f2d026"
+  inputs-digest = "c9a0093d8f5052cffed7e91f97b656fdb50efa7b62a7254860211bc25a764c96"
   solver-name = "gps-cdcl"
   solver-version = 1
