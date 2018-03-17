@@ -64,8 +64,8 @@
     "service/s3/s3manager",
     "service/sts"
   ]
-  revision = "62465d4996f172ae426fdcec7a6a053062cf8995"
-  version = "v1.13.15"
+  revision = "f0872da8a448f8cb10f4f0c95c2100e4f7356448"
+  version = "v1.13.16"
 
 [[projects]]
   branch = "master"
@@ -76,8 +76,8 @@
 [[projects]]
   branch = "master"
   name = "github.com/denismakogon/omega2-apps"
-  packages = ["serverless/twitter-daemon/api"]
-  revision = "0b6a5d66f934ad92da610fdc55dc633d019df269"
+  packages = ["serverless/common"]
+  revision = "7e67dab05ab9009b51af1bcc7a805588991b12e2"
 
 [[projects]]
   branch = "master"
@@ -216,7 +216,7 @@
   branch = "master"
   name = "golang.org/x/crypto"
   packages = ["ssh/terminal"]
-  revision = "b4956d363a8b14623cc81db401707679605930a3"
+  revision = "374053ea96cb300f8671b8d3b07edeeb06e203b4"
 
 [[projects]]
   branch = "master"
@@ -235,7 +235,7 @@
     "unix",
     "windows"
   ]
-  revision = "cc7307a45468e49eaf2997c890f14aa03a26917b"
+  revision = "2f1e207ee39ff70f3433e49c6eb52677a515e3b5"
 
 [[projects]]
   name = "golang.org/x/text"
@@ -277,6 +277,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "90e1e9785ffff8958c64f22d06380d9b1e74d7659df5060181036a2191f2d026"
+  inputs-digest = "b833602f17c99d749038319171262da94b8ff7a1609d15048e9797f4106293c5"
   solver-name = "gps-cdcl"
   solver-version = 1

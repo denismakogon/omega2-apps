@@ -86,15 +86,16 @@ func New(u *url.URL) (*store, error) {
 	return store, nil
 }
 
-func (s *store) asyncDispatcher(ctx context.Context, wg sync.WaitGroup, input *s3.ListObjectsInput,
+func (s *store) asyncDispatcher(ctx context.Context, wg sync.WaitGroup, log *logrus.Entry, input *s3.ListObjectsInput,
 	req *http.Request, httpClient *http.Client, fnToken string) error {
 
 	result, err := s.client.ListObjectsWithContext(ctx, input)
 	if err != nil {
 		return err
 	}
-
-	fmt.Fprintln(os.Stderr, "Found object: ", len(result.Contents))
+	log.Info("Current query key: ", *result.Marker)
+	log.Info("Next query key: ", *result.NextMarker)
+	log.Info("Found object: ", len(result.Contents))
 	if len(result.Contents) > 0 {
 		wg.Add(len(result.Contents))
 		for _, object := range result.Contents {
@@ -103,27 +104,26 @@ func (s *store) asyncDispatcher(ctx context.Context, wg sync.WaitGroup, input *s
 				defer wg.Done()
 
 				target := &aws.WriteAtBuffer{}
-				fmt.Fprintln(os.Stderr, "Pulling the content of the object: ", s.bucket+"/"+*object.Key)
+				log.Info("Pulling the content of the object: ", s.bucket+"/"+*object.Key)
 				size, err := s.downloader.DownloadWithContext(ctx, target, &s3.GetObjectInput{
 					Bucket: aws.String(s.bucket),
 					Key:    object.Key,
 				})
 				if err != nil {
-					fmt.Fprintln(os.Stderr, err.Error())
+					log.Fatal(err.Error())
 					os.Exit(1)
 				}
-
 				req.Header.Set("Content-Length", strconv.FormatInt(size, 10))
 				//payload := &api.RequestPayload{MediaContent: string(target.Bytes())}
 				//err = api.DoRequest(payload, req, httpClient, fnToken)
 				//if err != nil {
-				//	fmt.Fprintln(os.Stderr, err.Error())
+				//	log.Fatal(err.Error())
 				//	os.Exit(1)
 				//}
 
 			}(wg, object)
 		}
-		input.SetMarker(*result.Marker)
+		input.SetMarker(*result.NextMarker)
 	}
 
 	return nil
@@ -148,10 +148,10 @@ func (s *store) DispatchObjects(ctx context.Context, wg sync.WaitGroup, appName 
 		return err
 	}
 	httpClient := common.SetupHTTPClient()
-
+	log := logrus.WithFields(logrus.Fields{"bucketName": s.bucket})
 	for {
 
-		err = s.asyncDispatcher(ctx, wg, input, detect, httpClient, fnToken)
+		err = s.asyncDispatcher(ctx, wg, log, input, detect, httpClient, fnToken)
 		if err != nil {
 			return err
 		}
