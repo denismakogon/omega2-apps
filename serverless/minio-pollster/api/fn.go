@@ -3,24 +3,13 @@ package api
 import (
 	"context"
 	"errors"
-	"github.com/denismakogon/omega2-apps/serverless/common"
 	"os"
+
+	"github.com/denismakogon/omega2-apps/serverless/minio-pollster/common"
 )
 
-func setupEmokognitionV2(ctx context.Context, appName string) (fnAPIURL, fnToken string, err error) {
+func setupEmokognitionV2(ctx context.Context, appName string, config map[string]string) (fnAPIURL, fnToken string, err error) {
 	fnAPIURL, fnToken, fnClient, err := common.SetupFNClient()
-	config := map[string]string{}
-
-	pgConf := new(common.PostgresConfig)
-	err = pgConf.FromEnv()
-	if err != nil {
-		return "", "", err
-	}
-
-	config, err = common.Append(pgConf, config)
-	if err != nil {
-		return "", "", err
-	}
 
 	config["FN_API_URL"] = os.Getenv("INTERNAL_FN_API_URL")
 
@@ -30,12 +19,12 @@ func setupEmokognitionV2(ctx context.Context, appName string) (fnAPIURL, fnToken
 	}
 
 	err = common.RecreateRoute(ctx, fnClient, appName,
-		"denismakogon/emokognition-v2:0.0.1",
-		"/detect-v2",
+		"denismakogon/emokognition:0.0.8",
+		"/detect",
 		"async",
 		"json",
 		"2000m",
-		600, 200, uint64(1024))
+		600, 200, uint64(1500))
 	if err != nil {
 		return "", "", errors.New(err.Error())
 	}

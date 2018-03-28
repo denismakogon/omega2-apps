@@ -1,8 +1,0 @@
-name: denismakogon/emokognition-v2
-version: 0.0.1
-format: json
-path: /detect-v2
-type: async
-timeout: 60
-idle_timeout: 200
-memory: 1024

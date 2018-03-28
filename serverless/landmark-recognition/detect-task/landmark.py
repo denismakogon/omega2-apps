@@ -4,6 +4,7 @@ import sys
 import requests
 import fdk
 import ssl
+import ujson
 
 from urllib import request
 from google.oauth2 import service_account
@@ -13,18 +14,17 @@ from google.cloud.vision import types
 
 def inject_client(client):
 
-    @fdk.coerce_input_to_content_type
     def handle(context, data=None, loop=None):
         try:
             ctx = None
-            content = None
+            data = ujson.loads(data)
             image_url = data.get("media_url")
             if "https" in image_url:
                 ctx = ssl.create_default_context()
                 ctx.check_hostname = False
                 ctx.verify_mode = ssl.CERT_NONE
 
-            print(image_url, file=sys.stderr, flush=True)
+            print("Image URL: ", image_url, file=sys.stderr, flush=True)
             user = data.get("user")
             tweet_id = data.get("tweet_id")
 

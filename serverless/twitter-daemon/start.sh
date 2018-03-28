@@ -29,7 +29,7 @@ export POSTGRES_DB=emokognition
 export POSTGRES_USER=postgres
 export POSTGRES_PASSWORD=postgres
 
-export TwitterBotType=emokognition
+export TwitterBotType=${TwitterBotType:-emokognition}
 export InitialTweetID=925300910162669567
 
 ./twitter-daemon

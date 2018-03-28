@@ -3,7 +3,6 @@ package common
 import (
 	"context"
 	"errors"
-	"fmt"
 	"github.com/fnproject/fn_go/client"
 	"github.com/fnproject/fn_go/client/apps"
 	"github.com/fnproject/fn_go/client/routes"
@@ -214,7 +213,6 @@ func setupLandmarkAppAndRoutes(fnclient *client.Fn, gcloud *GCloudSecret, twitte
 
 func SetupFNClient() (string, string, *client.Fn, error) {
 	fnAPIURL := os.Getenv("FN_API_URL")
-	fmt.Fprintln(os.Stderr, "Fn API URL: ", fnAPIURL)
 	if fnAPIURL == "" {
 		fnAPIURL = "http://localhost:8080"
 	}

@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/ChimeraCoder/anaconda"
-	"github.com/denismakogon/omega2-apps/serverless/common"
+	"github.com/denismakogon/omega2-apps/serverless/twitter-daemon/common"
 	"net/http"
 	"net/url"
 	"os"
@@ -108,7 +108,7 @@ func LandmarkRecognition() error {
 
 func main() {
 	botType := os.Getenv("TwitterBotType")
-	if botType == "landmark" {
+	if botType == "landmark-recognition" {
 		err := LandmarkRecognition()
 		if err != nil {
 			fmt.Fprintln(os.Stderr, err.Error())

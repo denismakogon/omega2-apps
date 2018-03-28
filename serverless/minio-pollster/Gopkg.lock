@@ -2,18 +2,6 @@
 
 
 [[projects]]
-  name = "github.com/ChimeraCoder/anaconda"
-  packages = ["."]
-  revision = "9c68684170b980d5b4c2ed08fae9b530e659904d"
-  version = "v2.0.0"
-
-[[projects]]
-  branch = "master"
-  name = "github.com/ChimeraCoder/tokenbucket"
-  packages = ["."]
-  revision = "c5a927568de7aad8a58127d80bcd36ca4e71e454"
-
-[[projects]]
   name = "github.com/PuerkitoBio/purell"
   packages = ["."]
   revision = "0bcb03f4b4d0a9428594752bd2a3b9aa0a9d4bd4"
@@ -68,30 +56,6 @@
   version = "v1.13.16"
 
 [[projects]]
-  branch = "master"
-  name = "github.com/azr/backoff"
-  packages = ["."]
-  revision = "53511d3c733003985b0b76f733df1f4d0095ee6a"
-
-[[projects]]
-  branch = "master"
-  name = "github.com/denismakogon/omega2-apps"
-  packages = ["serverless/common"]
-  revision = "7e67dab05ab9009b51af1bcc7a805588991b12e2"
-
-[[projects]]
-  branch = "master"
-  name = "github.com/dustin/go-jsonpointer"
-  packages = ["."]
-  revision = "ba0abeacc3dcca5b9b20f31509c46794edbc9965"
-
-[[projects]]
-  branch = "master"
-  name = "github.com/dustin/gojson"
-  packages = ["."]
-  revision = "2e71ec9dd5adce3b168cd0dbde03b5cc04951c30"
-
-[[projects]]
   name = "github.com/fnproject/fn_go"
   packages = [
     "client",
@@ -103,12 +67,6 @@
   ]
   revision = "1c5ec475d4536388b366b1f075945cd64d8c1cb4"
   version = "0.2.4"
-
-[[projects]]
-  branch = "master"
-  name = "github.com/garyburd/go-oauth"
-  packages = ["oauth"]
-  revision = "4cff9ef7b7003713efa191899dbaab8fa75e3e73"
 
 [[projects]]
   name = "github.com/go-ini/ini"
@@ -277,6 +235,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "b833602f17c99d749038319171262da94b8ff7a1609d15048e9797f4106293c5"
+  inputs-digest = "af1f2a1bb2f6faab2e7de449159ba5ab1e61b70c49579768237fc00879928f12"
   solver-name = "gps-cdcl"
   solver-version = 1

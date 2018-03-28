@@ -10,12 +10,11 @@ import (
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
-	"github.com/denismakogon/omega2-apps/serverless/common"
+	"github.com/denismakogon/omega2-apps/serverless/minio-pollster/common"
 	"github.com/sirupsen/logrus"
 	"net/http"
 	"net/url"
 	"os"
-	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -26,25 +25,40 @@ type store struct {
 	uploader   *s3manager.Uploader
 	downloader *s3manager.Downloader
 	bucket     string
+	config     *MinioConfig
 }
 
-func createStore(bucketName, endpoint, region, accessKeyID, secretAccessKey string, useSSL bool) *store {
+func (m *MinioConfig) createStore() *store {
 	client := s3.New(session.Must(session.NewSession(&aws.Config{
-		Credentials:      credentials.NewStaticCredentials(accessKeyID, secretAccessKey, ""),
-		Endpoint:         aws.String(endpoint),
-		Region:           aws.String(region),
-		DisableSSL:       aws.Bool(!useSSL),
+		Credentials:      credentials.NewStaticCredentials(m.AccessKeyID, m.SecretAccessKey, ""),
+		Endpoint:         aws.String(m.Endpoint),
+		Region:           aws.String(m.Region),
+		DisableSSL:       aws.Bool(!m.UseSSL),
 		S3ForcePathStyle: aws.Bool(true),
 	})))
 	return &store{
 		client:     client,
+		config:     m,
 		uploader:   s3manager.NewUploaderWithClient(client),
 		downloader: s3manager.NewDownloaderWithClient(client),
-		bucket:     bucketName,
 	}
 }
 
-func New(u *url.URL) (*store, error) {
+type MinioConfig struct {
+	Bucket          string `json:"bucket"`
+	Endpoint        string `json:"endpoint"`
+	Region          string `json:"region"`
+	AccessKeyID     string `json:"access_key_id"`
+	SecretAccessKey string `json:"secret_access_key"`
+	UseSSL          bool   `json:"use_ssl"`
+}
+
+func (m *MinioConfig) FromURL(s string) error {
+	u, err := url.Parse(s)
+	if err != nil {
+		return err
+	}
+
 	endpoint := u.Host
 
 	var accessKeyID, secretAccessKey string
@@ -56,30 +70,66 @@ func New(u *url.URL) (*store, error) {
 
 	strs := strings.SplitN(u.Path, "/", 3)
 	if len(strs) < 3 {
-		return nil, errors.New("must provide bucket name and region in path of s3 api url. e.g. s3://s3.com/us-east-1/my_bucket")
+		return errors.New("must provide bucket name and region in path of s3 api url. e.g. s3://s3.com/us-east-1/my_bucket")
 	}
 	region := strs[1]
 	bucketName := strs[2]
 	if region == "" {
-		return nil, errors.New("must provide non-empty region in path of s3 api url. e.g. s3://s3.com/us-east-1/my_bucket")
+		return errors.New("must provide non-empty region in path of s3 api url. e.g. s3://s3.com/us-east-1/my_bucket")
 	} else if bucketName == "" {
-		return nil, errors.New("must provide non-empty bucket name in path of s3 api url. e.g. s3://s3.com/us-east-1/my_bucket")
+		return errors.New("must provide non-empty bucket name in path of s3 api url. e.g. s3://s3.com/us-east-1/my_bucket")
 	}
 
-	logrus.WithFields(logrus.Fields{"bucketName": bucketName, "region": region, "endpoint": endpoint, "access_key_id": accessKeyID, "useSSL": useSSL}).Info("checking / creating s3 bucket")
-	store := createStore(bucketName, endpoint, region, accessKeyID, secretAccessKey, useSSL)
+	m.Bucket = bucketName
+	m.Endpoint = endpoint
+	m.Region = region
+	m.AccessKeyID = accessKeyID
+	m.SecretAccessKey = secretAccessKey
+	m.UseSSL = useSSL
 
-	_, err := store.client.CreateBucket(&s3.CreateBucketInput{Bucket: aws.String(bucketName)})
+	return nil
+}
+
+func (m *MinioConfig) ToMap() (map[string]interface{}, error) {
+	return common.ToMap(m)
+}
+
+func withDefault(key, defaultValue string) string {
+	v := os.Getenv(key)
+	if v == "" {
+		return defaultValue
+	}
+	return v
+}
+
+func New() (*store, error) {
+	m := &MinioConfig{}
+
+	err := m.FromURL(withDefault("MINIO_URL",
+		"s3://admin:password@localhost:9000/us-east-1/emotions"))
+	if err != nil {
+		return nil, err
+	}
+	logFields, err := m.ToMap()
+	if err != nil {
+		return nil, err
+	}
+
+	logrus.WithFields(logFields).Info("checking / creating s3 bucket")
+
+	store := m.createStore()
+
+	_, err = store.client.CreateBucket(&s3.CreateBucketInput{Bucket: aws.String(m.Bucket)})
 	if err != nil {
 		if aerr, ok := err.(awserr.Error); ok {
 			switch aerr.Code() {
 			case s3.ErrCodeBucketAlreadyOwnedByYou, s3.ErrCodeBucketAlreadyExists:
 				// bucket already exists, NO-OP
 			default:
-				return nil, fmt.Errorf("failed to create bucket %s: %s", bucketName, aerr.Message())
+				return nil, fmt.Errorf("failed to create bucket %s: %s", m.Bucket, aerr.Message())
 			}
 		} else {
-			return nil, fmt.Errorf("unexpected error creating bucket %s: %s", bucketName, err.Error())
+			return nil, fmt.Errorf("unexpected error creating bucket %s: %s", m.Bucket, err.Error())
 		}
 	}
 
@@ -93,9 +143,13 @@ func (s *store) asyncDispatcher(ctx context.Context, wg sync.WaitGroup, log *log
 	if err != nil {
 		return err
 	}
-	log.Info("Current query key: ", *result.Marker)
-	log.Info("Next query key: ", *result.NextMarker)
-	log.Info("Found object: ", len(result.Contents))
+	fields := logrus.Fields{}
+	fields["current_key"] = *result.Marker
+	fields["objects_found"] = len(result.Contents)
+	if result.NextMarker != nil {
+		fields["next_query_key"] = *result.NextMarker
+	}
+	log = log.WithFields(fields)
 	if len(result.Contents) > 0 {
 		wg.Add(len(result.Contents))
 		for _, object := range result.Contents {
@@ -103,23 +157,29 @@ func (s *store) asyncDispatcher(ctx context.Context, wg sync.WaitGroup, log *log
 			go func(wg sync.WaitGroup, object *s3.Object) {
 				defer wg.Done()
 
-				target := &aws.WriteAtBuffer{}
-				log.Info("Pulling the content of the object: ", s.bucket+"/"+*object.Key)
-				size, err := s.downloader.DownloadWithContext(ctx, target, &s3.GetObjectInput{
-					Bucket: aws.String(s.bucket),
-					Key:    object.Key,
-				})
+				getObjectReq, _ := s.client.GetObjectRequest(
+					&s3.GetObjectInput{
+						Bucket: &s.config.Bucket,
+						Key:    object.Key,
+					},
+				)
+
+				urlStr, err := getObjectReq.Presign(15 * time.Minute)
 				if err != nil {
 					log.Fatal(err.Error())
 					os.Exit(1)
 				}
-				req.Header.Set("Content-Length", strconv.FormatInt(size, 10))
-				//payload := &api.RequestPayload{MediaContent: string(target.Bytes())}
-				//err = api.DoRequest(payload, req, httpClient, fnToken)
-				//if err != nil {
-				//	log.Fatal(err.Error())
-				//	os.Exit(1)
-				//}
+
+				log.Info("Sending the object: ", s.config.Bucket+"/"+*object.Key)
+				log.Info("Presigned object URL: ", urlStr)
+
+				payload := &common.RequestPayload{MediaURL: urlStr}
+
+				err = common.DoRequest(log, payload, req, httpClient, fnToken)
+				if err != nil {
+					log.Fatal(err.Error())
+					os.Exit(1)
+				}
 
 			}(wg, object)
 		}
@@ -130,25 +190,51 @@ func (s *store) asyncDispatcher(ctx context.Context, wg sync.WaitGroup, log *log
 }
 
 func (s *store) DispatchObjects(ctx context.Context, wg sync.WaitGroup, appName string) error {
-	fnAPIURL, fnToken, err := setupEmokognitionV2(ctx, appName)
+	log := logrus.WithFields(logrus.Fields{"bucketName": s.config.Bucket})
+	config := map[string]string{}
+
+	pgConf := new(common.PostgresConfig)
+	err := pgConf.FromEnv()
+	if err != nil {
+		return err
+	}
+	log.Info("Postgres config provisioned")
+
+	config, err = common.Append(pgConf, config)
+	if err != nil {
+		return err
+	}
+
+	m := &MinioConfig{}
+	err = m.FromURL(os.Getenv("INTERNAL_MINIO_URL"))
+	if err != nil {
+		return err
+	}
+	log.Info("Internal Minio config provisioned")
+
+	config, err = common.Append(m, config)
+	if err != nil {
+		return err
+	}
+
+	fnAPIURL, fnToken, err := setupEmokognitionV2(ctx, appName, config)
 	if err != nil {
 		return err
 	}
 
 	input := &s3.ListObjectsInput{
-		Bucket:  aws.String(s.bucket),
+		Bucket:  aws.String(s.config.Bucket),
 		MaxKeys: aws.Int64(10),
 		Marker:  aws.String(""),
 	}
 
 	detect, err := http.NewRequest(
-		http.MethodPost, fmt.Sprintf("%s/r/%s/detect-v2", fnAPIURL, appName),
+		http.MethodPost, fmt.Sprintf("%s/r/%s/detect", fnAPIURL, appName),
 		nil)
 	if err != nil {
 		return err
 	}
 	httpClient := common.SetupHTTPClient()
-	log := logrus.WithFields(logrus.Fields{"bucketName": s.bucket})
 	for {
 
 		err = s.asyncDispatcher(ctx, wg, log, input, detect, httpClient, fnToken)

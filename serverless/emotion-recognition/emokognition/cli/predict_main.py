@@ -22,7 +22,6 @@ import json
 
 import fdk
 
-from urllib import request
 from emotions import constants
 from emotions import recognition
 from emotions import utils
@@ -34,10 +33,9 @@ network.load_model_from_external_file("/code/cli/face_recognition_model")
 
 
 def handler(context, data=None, loop=None):
-    if isinstance(data, str):
-        data = json.loads(data)
-    if isinstance(data, dict):
-        pass
+    print("data before: ", data, file=sys.stderr, flush=True)
+    data = json.loads(data)
+    print("data after: ", data, file=sys.stderr, flush=True)
 
     emotion_dict = {}
     ctx = None
@@ -46,12 +44,15 @@ def handler(context, data=None, loop=None):
         ctx.check_hostname = False
         ctx.verify_mode = ssl.CERT_NONE
 
-    print("attempting to read image from the media URL", file=sys.stderr, flush=True)
-    url_response = request.urlopen(data["media_url"], context=ctx)
+    media_url = data.get("media_url", "").replace("\u0026", "&")
+    print("attempting to read image from the media URL: ", media_url, file=sys.stderr, flush=True)
+    resp = requests.get(media_url)
+
+    # url_response = request.urlopen(media_url, context=ctx)
     print("done reading image from the media URL: {0}".format(data["media_url"]),
           file=sys.stderr, flush=True)
     img = cv2.imdecode(
-            np.array(bytearray(url_response.read()), dtype=np.uint8),
+            np.array(bytearray(resp.content), dtype=np.uint8),
             cv2.COLOR_GRAY2BGR
     )
     frame = utils.format_image_for_prediction(img)

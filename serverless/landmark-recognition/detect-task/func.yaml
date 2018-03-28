@@ -6,3 +6,4 @@ type: async
 timeout: 60
 idle_timeout: 200
 memory: 1024
+runtime: python3.6

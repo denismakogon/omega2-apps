@@ -1,4 +1,4 @@
 google-auth==1.0.2
 google-cloud-vision==0.27.0
 requests==2.18.4
-fdk==0.0.6
+fdk

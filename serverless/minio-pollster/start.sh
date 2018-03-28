@@ -20,6 +20,8 @@ docker inspect -f {{.State.Running}} fnserver | grep '^true$'
 fn version
 
 export MINIO_URL="s3://admin:password@localhost:9000/us-east-1/emotions"
+export INTERNAL_MINIO_URL="s3://admin:password@$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' minio):9000/us-east-1/emotions"
+
 export FN_API_URL="http://localhost:8080"
 export INTERNAL_FN_API_URL="http://$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' fnserver):8080"
 
